@@ -1,0 +1,485 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* Prevent font flash for Rubik Doodle Shadow */
+@font-face {
+  font-family: 'Rubik Doodle Shadow';
+  src: local('Rubik Doodle Shadow');
+  font-display: swap;
+}
+
+@layer base {
+  body {
+    @apply bg-white md:bg-white text-neutral-900;
+    font-family: 'Poppins', sans-serif !important;
+    margin: 0;
+    padding: 0;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+    background: white;
+    font-size: 17.5px !important;
+  }
+
+  /* Exclude top header navigation bar and subcategory slider from root font scaling */
+  nav span,
+  nav a,
+  nav input,
+  nav button,
+  nav p,
+  nav div {
+    font-size: 14px;
+  }
+
+  /* Keep category tabs labels at their correct size */
+  button span.text-\[9\.5px\],
+  button span.md\:text-\[12px\],
+  .category-tab-icon * {
+    font-size: 12px;
+  }
+
+  #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    background: white;
+    overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Remove default video styling */
+video {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+@keyframes slide-left {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-slide-left {
+  animation: slide-left 0.5s ease-out;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* GLOBAL SCROLLBAR HIDING OVERRIDE */
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+}
+
+/* GLOBAL POPPINS ENFORCEMENT FOR PREMIUM THEME */
+.premium-theme,
+.premium-theme *,
+.premium-theme button,
+.premium-theme input,
+.premium-theme select,
+.premium-theme textarea,
+.premium-theme table,
+.premium-theme th,
+.premium-theme td {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+/* LAYOUT WIDTH AND PADDING OVERRIDES */
+.premium-theme main {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+.premium-theme main > div,
+.premium-theme main > div > div,
+.premium-theme .mx-auto,
+.premium-theme [class*="max-w-"] {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  background-color: transparent !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Customer Layout Width and Padding overrides to remove left/right extra spaces on desktop */
+main .max-w-7xl,
+main .max-w-6xl,
+main .max-w-5xl,
+main .max-w-screen-xl,
+main .mx-auto:not(.max-w-md):not(.max-w-sm):not(.max-w-xs):not(.max-w-2xl):not(.max-w-xl):not(.max-w-lg) {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+/* SOFTENED TYPOGRAPHY WEIGHT OVERRIDES */
+.premium-theme .font-bold {
+  font-weight: 600 !important;
+}
+.premium-theme .font-semibold {
+  font-weight: 500 !important;
+}
+.premium-theme h4,
+.premium-theme h5,
+.premium-theme h6 {
+  font-weight: 500 !important;
+}
+
+/* POS tab container top space */
+.premium-theme div.overflow-x-auto.border-b.border-gray-200,
+.premium-theme div[class*="overflow-x-auto"][class*="border-b"] {
+  margin-top: 16px !important;
+}
+
+/* POS desktop table header spacing */
+.premium-theme div.hidden.md\:grid.grid-cols-12 {
+  padding-top: 16px !important;
+}
+
+/* GLOBAL NAVY-BLUE COLOR REPLACEMENTS FOR USER'S SPECIFIC PALETTE */
+[class*="bg-[#0d055a]"] {
+  background-color: #223129 !important;
+}
+
+[class*="border-[#0d055a]"] {
+  border-color: #223129 !important;
+}
+
+[class*="text-[#0d055a]"] {
+  color: #223129 !important;
+}
+
+/* Complete Transaction Button (Primary Green) */
+button[class*="shadow-[#0d055a]"] {
+  background-color: #6DBB2D !important;
+  border-color: #6DBB2D !important;
+  color: #FFFFFF !important;
+}
+
+button[class*="shadow-[#0d055a]"]:hover {
+  background-color: #5da026 !important;
+  border-color: #5da026 !important;
+}
+
+/* Generate Bill Button (Accent Gold with high-contrast dark text) */
+button[class*="border-[#0d055a]"][class*="group"] {
+  background-color: #F7B733 !important;
+  border-color: #F7B733 !important;
+  color: #223129 !important;
+}
+
+button[class*="border-[#0d055a]"][class*="group"]:hover {
+  background-color: #e5a524 !important;
+  border-color: #F7B733 !important;
+  color: #223129 !important;
+}
+
+/* RESPONSIVE LOGIN PAGE STYLING */
+@media (max-width: 767px) {
+  .login-page-wrapper {
+    width: 100%;
+    height: 100vh;
+    background-color: #ffffff;
+    overflow: hidden;
+  }
+  .login-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+  }
+  .login-video-container {
+    height: 56vh;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    z-index: 0;
+    background-color: #ffffff;
+  }
+  .login-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    object-fit: cover;
+    background: transparent;
+    position: relative;
+    z-index: 0;
+  }
+  .login-section-container {
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 44vh;
+    width: 100%;
+    padding: 1.5rem 1rem;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@media (min-width: 768px) {
+  .login-page-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #fef2f2 0%, #ffe4e6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem;
+  }
+  .login-card {
+    background-color: #ffffff;
+    border-radius: 1.25rem;
+    box-shadow: 0 25px 50px -12px rgba(127, 29, 29, 0.12);
+    border: 1px solid rgba(220, 38, 38, 0.08);
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    max-width: 900px;
+    height: 560px;
+    overflow: hidden;
+    position: relative;
+  }
+  .login-video-container {
+    width: 55%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  .login-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .login-section-container {
+    width: 45%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 2rem;
+    background-color: #ffffff;
+    box-sizing: border-box;
+  }
+}
+
+/* Custom Amazon style font for navbar */
+.amazon-nav-font,
+.amazon-nav-font *,
+.amazon-nav-font button,
+.amazon-nav-font input,
+.amazon-nav-font span,
+.amazon-nav-font div,
+.amazon-nav-font a {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+/* Flipkart Style Category Dual-Tone Icons */
+.category-tab-icon svg {
+  color: #374151; /* Charcoal outline */
+  width: 28px !important;
+  height: 28px !important;
+  display: block;
+  margin: auto;
+  transition: all 0.3s ease;
+}
+.category-tab-icon-active svg {
+  color: #163F2E !important; /* Theme primary active color */
+}
+.category-tab-icon svg * {
+  stroke-width: 1.2px !important;
+}
+/* Sub-elements inside SVG colored with Accent Gold to achieve Flipkart dual-tone effect */
+.category-tab-icon svg path:nth-last-child(1),
+.category-tab-icon svg circle:nth-last-child(1),
+.category-tab-icon svg line:nth-last-child(1),
+.category-tab-icon svg polygon:nth-last-child(1),
+.category-tab-icon svg rect:nth-last-child(1) {
+  stroke: #F2B134 !important;
+}
+/* Ensure fill remains correct if required */
+.category-tab-icon svg path:nth-last-child(1)[fill="currentColor"] {
+  fill: #F2B134 !important;
+}
+
+/* Scale up checkout page typography */
+.checkout-page-container h2 {
+  font-size: 1.55rem !important;
+}
+.checkout-page-container h3 {
+  font-size: 1.15rem !important;
+}
+.checkout-page-container .text-xs {
+  font-size: 0.85rem !important;
+}
+.checkout-page-container .text-sm {
+  font-size: 1.0rem !important;
+}
+.checkout-page-container .text-\[10px\] {
+  font-size: 0.8rem !important;
+}
+.checkout-page-container .text-\[8px\] {
+  font-size: 0.72rem !important;
+}
+.checkout-page-container .text-lg {
+  font-size: 1.2rem !important;
+}
+.checkout-page-container .text-xl {
+  font-size: 1.4rem !important;
+}
+.checkout-page-container .text-2xl {
+  font-size: 1.6rem !important;
+}
+.checkout-page-container .text-3xl {
+  font-size: 1.95rem !important;
+}
+
+/* POS Stepper Input Override */
+.premium-theme input[type="number"].pos-stepper-input,
+input[type="number"].pos-stepper-input,
+input.pos-stepper-input {
+  height: 100% !important;
+  border-radius: 0px !important;
+  border: none !important;
+  padding: 0px !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  min-height: 0px !important;
+  margin: 0px !important;
+}
+
+/* Compact POS Input overrides to bypass premium-theme 42px height */
+.premium-theme input.pos-compact-input,
+input.pos-compact-input {
+  height: 32px !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  padding: 4px 8px !important;
+}
+
+/* Footer content container centering and layout alignment */
+.footer-content-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 62px !important;
+  padding-right: 62px !important;
+}
+
+/* Enforce correct dimensions and alignment for store settings icon pills to prevent stretching */
+.store-settings-icon-box {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  background-color: #ffffff !important;
+  border: 1px solid #f3f4f6 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  position: absolute !important;
+  left: 16px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 12px !important;
+  pointer-events: none !important;
+}
+
+.store-settings-icon-box-top {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  background-color: #ffffff !important;
+  border: 1px solid #f3f4f6 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  position: absolute !important;
+  left: 16px !important;
+  top: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 12px !important;
+  pointer-events: none !important;
+}
+
+/* POS & UI tab styling overrides */
+.force-text-white,
+.premium-theme .force-text-white,
+.premium-theme span.force-text-white,
+span.force-text-white {
+  color: #ffffff !important;
+}
