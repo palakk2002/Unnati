@@ -185,7 +185,9 @@ async function fetchSectionData(
 }
 
 async function fetchLowestPricesProducts(
-  nearbySellerIds: mongoose.Types.ObjectId[]
+  nearbySellerIds: mongoose.Types.ObjectId[],
+  adminSellerIds: string[] = [],
+  locationProvided: boolean = false
 ) {
   const lowestPricesProductsQuery: any = {
     isActive: true,
@@ -218,14 +220,18 @@ async function fetchLowestPricesProducts(
     .filter((item: any) => item.product !== null && item.product.category !== null)
     .map((item: any) => {
       const mapped = toListItem(item.product);
+      const sellerStr = item.product.seller ? item.product.seller.toString() : "";
+      const isAdminSeller = sellerStr && adminSellerIds.includes(sellerStr);
       const isAvailable =
-        nearbySellerIds &&
+        isAdminSeller ||
+        !locationProvided ||
+        (nearbySellerIds &&
         nearbySellerIds.length > 0 &&
-        item.product.seller
+        sellerStr
           ? nearbySellerIds.some(
-              (id) => id.toString() === item.product.seller.toString()
+              (id) => id.toString() === sellerStr
             )
-          : false;
+          : true);
 
       return {
         id: mapped._id,
@@ -353,7 +359,9 @@ export const getHomeContent = async (req: Request, res: Response) => {
 
     // 2. Lowest Prices Products - Get admin-selected products
     const validLowestPricesProducts = await fetchLowestPricesProducts(
-      nearbySellerIds
+      nearbySellerIds,
+      adminSellerIds,
+      locationProvided
     );
 
     // 3. Categories for Tiles (Grocery, Snacks, etc)

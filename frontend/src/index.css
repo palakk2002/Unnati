@@ -480,6 +480,8 @@ input.pos-compact-input {
 .force-text-white,
 .premium-theme .force-text-white,
 .premium-theme span.force-text-white,
+.premium-theme [class*="border-b"][class*="border-gray-"] span.force-text-white,
+.premium-theme [class*="border-b"][class*="border-gray-"] .force-text-white,
 span.force-text-white {
   color: #ffffff !important;
 }

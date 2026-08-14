@@ -28,17 +28,44 @@ interface Tab {
   icon: React.ReactNode;
 }
 
+const DUMMY_IMAGES: Record<string, string> = {
+  all: 'https://cdn-icons-png.flaticon.com/512/3603/3603123.png',
+  electronics: 'https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTExL3BmLXMxMDgtcG00MTEzLWNoaW1wLXBuZ18xLnBuZw.png',
+  clothing: 'https://png.pngtree.com/png-vector/20240131/ourmid/pngtree-green-varsity-jacket-png-image_11582236.png',
+  fashion: 'https://png.pngtree.com/png-vector/20240131/ourmid/pngtree-green-varsity-jacket-png-image_11582236.png',
+  books: 'https://png.pngtree.com/png-vector/20240309/ourmid/pngtree-books-isolated-on-white-background-stack-of-colorful-books-png-image_11920803.png',
+  food: 'https://png.pngtree.com/png-clipart/20230417/original/pngtree-fast-food-burger-set-png-image_9061640.png',
+  grocery: 'https://png.pngtree.com/png-clipart/20230417/original/pngtree-fast-food-burger-set-png-image_9061640.png',
+  home: 'https://png.pngtree.com/png-vector/20231215/ourmid/pngtree-beige-armchair-furniture-couch-isolated-white-background-png-image_11307221.png',
+  furniture: 'https://png.pngtree.com/png-vector/20231215/ourmid/pngtree-beige-armchair-furniture-couch-isolated-white-background-png-image_11307221.png',
+  sports: 'https://png.pngtree.com/png-vector/20230906/ourmid/pngtree-sports-balls-isolated-on-white-background-3d-illustration-png-image_10006232.png',
+  fitness: 'https://png.pngtree.com/png-vector/20230906/ourmid/pngtree-sports-balls-isolated-on-white-background-3d-illustration-png-image_10006232.png',
+  beauty: 'https://png.pngtree.com/png-vector/20230913/ourmid/pngtree-cosmetics-makeup-products-isolated-on-white-background-png-image_10078712.png',
+  fallback: 'https://cdn-icons-png.flaticon.com/512/3081/3081559.png'
+};
+
 const ALL_TAB: Tab = {
   id: 'all',
   label: 'All',
   icon: (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <img src={DUMMY_IMAGES.all} alt="All" className="w-full h-full object-contain rounded-md" />
   ),
+};
+
+const getCategoryTabIcon = (c: any) => {
+  if (c.image) {
+    return <img src={c.image} alt={c.name} className="w-full h-full object-contain" />;
+  }
+  const slug = (c.slug || c.id || c.name || '').toLowerCase();
+  if (slug.includes('all')) return <img src={DUMMY_IMAGES.all} alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('electron')) return <img src={DUMMY_IMAGES.electronics} alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('cloth') || slug.includes('fashion')) return <img src={DUMMY_IMAGES.clothing} alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('book')) return <img src={DUMMY_IMAGES.books} alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('food') || slug.includes('bev') || slug.includes('grocer')) return <img src={DUMMY_IMAGES.grocery} alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('home') || slug.includes('furnit')) return <img src={DUMMY_IMAGES.home} alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('sport') || slug.includes('fit')) return <img src={DUMMY_IMAGES.sports} alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('beaut')) return <img src={DUMMY_IMAGES.beauty} alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  return <img src={DUMMY_IMAGES.fallback} alt={c.name} className="w-full h-full object-contain rounded-md" />;
 };
 
 interface LanguageDropdownProps {
@@ -154,11 +181,7 @@ export default function HomeHero({ activeTab = 'all', onTabChange }: HomeHeroPro
       id: c.slug,
       label: c.name,
       theme: c.theme || c.slug,
-      icon: c.image ? (
-        <img src={c.image} alt={c.name} className="w-full h-full object-cover" />
-      ) : (
-        getIconByName(c.iconName)
-      )
+      icon: getCategoryTabIcon(c)
     }));
 
     const hasAllTab = mapped.some((tab) => tab.id === 'all');
@@ -182,11 +205,7 @@ export default function HomeHero({ activeTab = 'all', onTabChange }: HomeHeroPro
             id: c.slug,
             label: c.name,
             theme: c.theme || c.slug,
-            icon: c.image ? (
-                <img src={c.image} alt={c.name} className="w-full h-full object-cover" />
-            ) : (
-                getIconByName(c.iconName)
-            )
+            icon: getCategoryTabIcon(c)
           }));
 
           // Check if a tab with id 'all' is already provided by the API
@@ -515,29 +534,22 @@ export default function HomeHero({ activeTab = 'all', onTabChange }: HomeHeroPro
           {/* Left Arrow Button */}
           <div
             className="hidden md:flex flex-shrink-0 items-center justify-center transition-all duration-300"
-            style={{ paddingBottom: 0 }}
           >
             <button
               onClick={() => scrollTabs('left')}
-              className="flex flex-col items-center justify-center w-auto min-w-[35px] md:min-w-[45px] px-0.5 py-0 transition-all duration-300"
+              className="w-10 h-10 rounded-full bg-neutral-600/80 hover:bg-neutral-800 text-white flex items-center justify-center transition-all duration-300 shadow-md active:scale-95"
               type="button"
+              aria-label="Scroll left"
             >
-              <div className="w-[48px] h-[48px] md:w-[56px] md:h-[56px] flex items-center justify-center">
-                <div
-                  className="w-full h-full rounded-full flex items-center justify-center overflow-hidden p-1 transition-all duration-300 active:scale-95 text-neutral-800 hover:text-neutral-600"
-                >
-                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                  </svg>
-                </div>
-              </div>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
             </button>
           </div>
 
           <div
             ref={tabsContainerRef}
-            className="relative flex-1 flex items-center gap-3 md:gap-6 overflow-x-auto scrollbar-hide scroll-smooth"
-            style={{ paddingBottom: '1px' }}
+            className="relative flex-1 flex items-center gap-2.5 md:gap-3.5 overflow-x-auto scrollbar-hide scroll-smooth py-1 px-0.5"
             onWheel={(e) => {
               // Web view: mouse wheel is vertical; use it to scroll categories horizontally.
               if (window.innerWidth >= 768 && Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
@@ -547,12 +559,6 @@ export default function HomeHero({ activeTab = 'all', onTabChange }: HomeHeroPro
               }
             }}
           >
-            {indicatorStyle.width > 0 && (
-              <div
-                className="absolute bottom-0 h-[2.5px] rounded-full transition-all duration-300 ease-out pointer-events-none"
-                style={{ left: `${indicatorStyle.left}px`, width: `${indicatorStyle.width}px`, backgroundColor: '#2563eb', transition: 'left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1)', zIndex: 0 }}
-              />
-            )}
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -560,27 +566,22 @@ export default function HomeHero({ activeTab = 'all', onTabChange }: HomeHeroPro
                   key={tab.id}
                   ref={(el) => { if (el) tabRefs.current.set(tab.id, el); else tabRefs.current.delete(tab.id); }}
                   onClick={() => handleTabClick(tab.id)}
-                  className="flex-shrink-0 flex flex-col items-center justify-center w-[calc((100vw-32px-48px)/5)] md:w-auto md:min-w-[62px] px-0.5 py-0 md:px-3 relative z-10 transition-all duration-300 group"
+                  className={`flex-shrink-0 flex flex-col items-center justify-between w-[74px] h-[82px] md:w-[84px] md:h-[90px] p-1.5 md:p-2 rounded-xl transition-all duration-200 group border cursor-pointer ${
+                    isActive
+                      ? 'border-[#34d399] bg-[#e6f7f2] shadow-sm'
+                      : 'border-neutral-200 bg-white hover:border-neutral-300 shadow-[0_1px_2px_rgba(0,0,0,0.03)]'
+                  }`}
                   type="button"
                 >
-                  <div
-                    className="w-[48px] h-[48px] md:w-[56px] md:h-[56px] flex items-center justify-center transition-all duration-300 active:scale-95"
-                  >
-                    <div
-                      className={`w-full h-full rounded-xl flex items-center justify-center overflow-hidden p-1 transition-all duration-300 category-tab-icon ${isActive ? 'category-tab-icon-active shadow-sm border border-[#b3d7ff]' : 'border border-transparent hover:bg-neutral-100'}`}
-                      style={{
-                        backgroundColor: isActive ? '#e6f2ff' : 'transparent',
-                        color: isActive ? '#1e40af' : '#4b5563'
-                      }}
-                    >
-                      <div className="w-9 h-9 md:w-[44px] md:h-[44px] flex items-center justify-center flex-shrink-0 [&>svg]:w-full [&>svg]:h-full transition-transform duration-300 group-hover:scale-110">
-                        {tab.icon}
-                      </div>
+                  <div className="w-full flex-1 flex items-center justify-center overflow-hidden p-0.5">
+                    <div className="w-9 h-9 md:w-[46px] md:h-[46px] flex items-center justify-center flex-shrink-0 [&>svg]:w-full [&>svg]:h-full [&>img]:w-full [&>img]:h-full [&>img]:object-contain transition-transform duration-200 group-hover:scale-105">
+                      {tab.icon}
                     </div>
                   </div>
                   <span
-                    className={`text-[9.5px] md:text-[12px] text-center font-sans transition-all duration-200 ${isActive ? 'font-bold whitespace-normal' : 'font-medium whitespace-nowrap truncate w-full'}`}
-                    style={{ color: isActive ? '#111827' : '#4b5563', transition: 'color 0.3s' }}
+                    className={`text-[10px] md:text-[11.5px] leading-tight text-center font-sans truncate w-full px-0.5 ${
+                      isActive ? 'font-bold text-[#059669]' : 'font-medium text-neutral-600 group-hover:text-neutral-900'
+                    }`}
                   >
                     {tab.label.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}
                   </span>
@@ -592,22 +593,16 @@ export default function HomeHero({ activeTab = 'all', onTabChange }: HomeHeroPro
           {/* Right Arrow Button */}
           <div
             className="hidden md:flex flex-shrink-0 items-center justify-center transition-all duration-300"
-            style={{ paddingBottom: 0 }}
           >
             <button
               onClick={() => scrollTabs('right')}
-              className="flex flex-col items-center justify-center w-auto min-w-[35px] md:min-w-[45px] px-0.5 py-0 transition-all duration-300"
+              className="w-10 h-10 rounded-full bg-[#1e3a8a]/80 hover:bg-[#1e3a8a] text-white flex items-center justify-center transition-all duration-300 shadow-md active:scale-95"
               type="button"
+              aria-label="Scroll right"
             >
-              <div className="w-[48px] h-[48px] md:w-[56px] md:h-[56px] flex items-center justify-center">
-                <div
-                  className="w-full h-full rounded-full flex items-center justify-center overflow-hidden p-1 transition-all duration-300 active:scale-95 text-neutral-800 hover:text-neutral-600"
-                >
-                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                  </svg>
-                </div>
-              </div>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
             </button>
           </div>
         </div>

@@ -38,6 +38,51 @@ const getCategoryIcons = (categoryId: string) => {
   return iconMap[categoryId] || ["📦", "📦", "📦", "📦"];
 };
 
+const getDummyCategoryImages = (title: string, categoryId?: string): string[] => {
+  const t = (title || "").toLowerCase();
+  const cid = (categoryId || "").toLowerCase();
+
+  if (t.includes("home") || t.includes("decor") || cid.includes("home")) {
+    return [
+      "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1540932239986-30128078f3c5?w=200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1507652313519-d4e9174996dd?w=200&auto=format&fit=crop&q=80",
+    ];
+  }
+  if (t.includes("net") || t.includes("mosquito") || t.includes("machhar")) {
+    return [
+      "https://images.unsplash.com/photo-1616046229478-9901c5536a45?w=200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=200&auto=format&fit=crop&q=80",
+    ];
+  }
+  if (t.includes("water") || t.includes("bottle") || t.includes("can")) {
+    return [
+      "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1556817411-31ae72fa3ea0?w=200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1523362628745-0c100150b504?w=200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1544816155-12df9643f363?w=200&auto=format&fit=crop&q=80",
+    ];
+  }
+  if (t.includes("towel") || t.includes("bath") || t.includes("cloth")) {
+    return [
+      "https://images.unsplash.com/photo-1616627547584-bf28cee262db?w=200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1629949009765-40fc74c954c9?w=200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1563291074-2bf8677ac0e5?w=200&auto=format&fit=crop&q=80",
+    ];
+  }
+  return [
+    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=200&auto=format&fit=crop&q=80",
+  ];
+};
+
+
 interface PromoStripProps {
   activeTab?: string;
 }
@@ -718,10 +763,10 @@ export default function PromoStrip({ activeTab = "all" }: PromoStripProps) {
               <div
                 ref={productImageRef}
                 className="flex-1 flex items-end justify-center w-full"
-                style={{ minHeight: "50px", maxHeight: "65px" }}>
+                style={{ minHeight: "55px", maxHeight: "75px" }}>
                 <div
                   onClick={handleProductClick}
-                  className="w-12 h-16 rounded-sm flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                  className="w-16 h-20 rounded-sm flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
                   style={{ background: "transparent" }}>
                   {displayProduct.imageUrl ? (
                     <img
@@ -772,10 +817,14 @@ export default function PromoStrip({ activeTab = "all" }: PromoStripProps) {
               the PromoStrip admin config has more than 4 entries. */}
           <div className="flex-1 grid grid-cols-2 gap-2">
             {visibleCategoryCards.map((card) => {
-              // Use subcategory images from the map if available, otherwise check card.subcategoryImages, then fallback to emoji icons
-              const subcategoryImages = subcategoryImagesMap[card.id] || card.subcategoryImages || [];
+              // Use subcategory images from the map if available, otherwise check card.subcategoryImages, then fallback to dummy product images
+              const rawSubImages = subcategoryImagesMap[card.id] || card.subcategoryImages || [];
+              const subcategoryImages = rawSubImages.length > 0
+                ? rawSubImages
+                : getDummyCategoryImages(card.title, card.categoryId || card.slug);
               const hasSubcategoryImages = subcategoryImages.length > 0;
               const categoryIcons = getCategoryIcons(card.categoryId || "");
+
 
               return (
                 <div key={card.id} className="promo-card">
@@ -818,8 +867,8 @@ export default function PromoStrip({ activeTab = "all" }: PromoStripProps) {
                             subcategoryImages.slice(0, 4).map((imageUrl, idx) => (
                                 <div
                                   key={idx}
-                                  className="flex-shrink-0 bg-white rounded-sm flex items-center justify-center overflow-hidden border border-neutral-200"
-                                  style={{ width: "48px", height: "48px" }}>
+                                  className="flex-shrink-0 bg-white rounded-md flex items-center justify-center overflow-hidden border border-neutral-200 shadow-sm"
+                                  style={{ width: "64px", height: "64px" }}>
                                   <img
                                     src={imageUrl}
                                     alt={`Subcategory ${idx + 1}`}
@@ -835,7 +884,7 @@ export default function PromoStrip({ activeTab = "all" }: PromoStripProps) {
                                       if (parent) {
                                         parent.innerHTML =
                                           categoryIcons[idx] || "📦";
-                                        parent.style.fontSize = "28px";
+                                        parent.style.fontSize = "34px";
                                         parent.style.display = "flex";
                                         parent.style.alignItems = "center";
                                         parent.style.justifyContent = "center";
@@ -848,11 +897,11 @@ export default function PromoStrip({ activeTab = "all" }: PromoStripProps) {
                             categoryIcons.slice(0, 4).map((icon, idx) => (
                               <div
                                 key={idx}
-                                className="flex-shrink-0 bg-transparent rounded-sm flex items-center justify-center overflow-hidden"
+                                className="flex-shrink-0 bg-transparent rounded-md flex items-center justify-center overflow-hidden"
                                 style={{
-                                  width: "48px",
-                                  height: "48px",
-                                  fontSize: "28px",
+                                  width: "64px",
+                                  height: "64px",
+                                  fontSize: "34px",
                                 }}>
                                 {icon}
                               </div>

@@ -9,6 +9,7 @@ import {
   Category as ApiCategory,
 } from "../../services/api/customerProductService";
 import { useLocation as useLocationContext } from "../../hooks/useLocation";
+import { calculateCardPrice } from "../../utils/priceUtils";
 
 export default function CategoryPage() {
   const { id } = useParams<{ id: string }>();
@@ -21,10 +22,20 @@ export default function CategoryPage() {
   const [subcategories, setSubcategories] = useState<ApiCategory[]>([]);
   const [selectedSubcategory, setSelectedSubcategory] = useState("all");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<string>("default");
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [filterSearchQuery, setFilterSearchQuery] = useState("");
   const [selectedFilterCategory, setSelectedFilterCategory] = useState("Type");
   const [products, setProducts] = useState<any[]>([]);
+
+  const sortOptions = [
+    { id: "default", label: "Relevance" },
+    { id: "price-asc", label: "Price: Low to High" },
+    { id: "price-desc", label: "Price: High to Low" },
+    { id: "name-asc", label: "Name: A to Z" },
+    { id: "name-desc", label: "Name: Z to A" },
+  ];
   const [loading, setLoading] = useState(true);
   const [categoryLoading, setCategoryLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -194,8 +205,41 @@ export default function CategoryPage() {
     }
   };
 
-  // Client-side filtering removed in favor of backend subcategory filtering
-  const categoryProducts = products;
+  // Sort and filter category products
+  const categoryProducts = useMemo(() => {
+    let result = [...products];
+
+    // Filter tags if selected
+    if (selectedFilters.length > 0) {
+      result = result.filter((product) => {
+        const name = (product.name || product.productName || "").toLowerCase();
+        return selectedFilters.some((filterName) =>
+          name.includes(filterName.toLowerCase())
+        );
+      });
+    }
+
+    // Sort products
+    if (sortBy === "price-asc") {
+      result.sort(
+        (a, b) => calculateCardPrice(a).displayPrice - calculateCardPrice(b).displayPrice
+      );
+    } else if (sortBy === "price-desc") {
+      result.sort(
+        (a, b) => calculateCardPrice(b).displayPrice - calculateCardPrice(a).displayPrice
+      );
+    } else if (sortBy === "name-asc") {
+      result.sort((a, b) =>
+        (a.name || a.productName || "").localeCompare(b.name || b.productName || "")
+      );
+    } else if (sortBy === "name-desc") {
+      result.sort((a, b) =>
+        (b.name || b.productName || "").localeCompare(a.name || a.productName || "")
+      );
+    }
+
+    return result;
+  }, [products, selectedFilters, sortBy]);
 
   if ((categoryLoading || loading) && !products.length && !category) {
     return null; // Let global IconLoader handle it
@@ -462,13 +506,20 @@ export default function CategoryPage() {
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col overflow-hidden bg-white">
-          {/* Filter/Sort Bar - Updated layout */}
-          <div className="px-4 md:px-6 lg:px-8 py-1.5 md:py-2 bg-white border-b border-neutral-200 flex-shrink-0">
+          {/* Filter/Sort Bar - Updated layout with inline Filter Dropdown */}
+          <div className="px-4 md:px-6 lg:px-8 py-1.5 md:py-2 bg-white border-b border-neutral-200 flex-shrink-0 relative z-30">
             <div className="flex items-center gap-1.5 md:gap-2 overflow-x-auto scrollbar-hide -mx-4 md:-mx-6 lg:-mx-8 px-4 md:px-6 lg:px-8 scroll-smooth">
               {/* Filters Button */}
               <button
-                onClick={() => setIsFiltersOpen(true)}
-                className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-neutral-700 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50 transition-colors flex-shrink-0 whitespace-nowrap">
+                onClick={() => {
+                  setIsFiltersOpen(!isFiltersOpen);
+                  setIsSortOpen(false);
+                }}
+                className={`flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap flex-shrink-0 ${
+                  isFiltersOpen
+                    ? "bg-neutral-100 text-neutral-900 border border-neutral-400"
+                    : "bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-50"
+                }`}>
                 <svg
                   width="12"
                   height="12"
@@ -487,11 +538,22 @@ export default function CategoryPage() {
                   />
                 </svg>
                 <span>Filters</span>
-                <span className="text-neutral-500 text-[10px] ml-0.5">▾</span>
+                <span className="text-neutral-500 text-[10px] ml-0.5">
+                  {isFiltersOpen ? "▴" : "▾"}
+                </span>
               </button>
 
               {/* Sort Button */}
-              <button className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-neutral-700 bg-white border border-neutral-300 rounded-md hover:bg-neutral-50 transition-colors flex-shrink-0 whitespace-nowrap">
+              <button
+                onClick={() => {
+                  setIsSortOpen(!isSortOpen);
+                  setIsFiltersOpen(false);
+                }}
+                className={`flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap flex-shrink-0 ${
+                  isSortOpen || sortBy !== "default"
+                    ? "bg-neutral-100 text-neutral-900 border border-neutral-400 font-semibold"
+                    : "bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-50"
+                }`}>
                 <svg
                   width="12"
                   height="12"
@@ -507,8 +569,14 @@ export default function CategoryPage() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                <span>Sort</span>
-                <span className="text-neutral-500 text-[10px] ml-0.5">▾</span>
+                <span>
+                  {sortBy === "default"
+                    ? "Sort"
+                    : sortOptions.find((o) => o.id === sortBy)?.label || "Sort"}
+                </span>
+                <span className="text-neutral-500 text-[10px] ml-0.5">
+                  {isSortOpen ? "▴" : "▾"}
+                </span>
               </button>
 
               {/* Category Buttons */}
@@ -548,6 +616,196 @@ export default function CategoryPage() {
                   );
                 })}
             </div>
+
+            {/* Inline Filters Dropdown Menu */}
+            <AnimatePresence>
+              {isFiltersOpen && (
+                <>
+                  {/* Transparent overlay for dismiss on click outside */}
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsFiltersOpen(false)}
+                  />
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                    transition={{ duration: 0.15 }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute left-4 top-full mt-1 z-50 w-[340px] sm:w-[420px] bg-white rounded-xl shadow-2xl border border-neutral-200 flex flex-col overflow-hidden max-h-[460px]">
+                    {/* Search Bar */}
+                    <div className="p-3 border-b border-neutral-200 bg-white">
+                      <div className="relative">
+                        <svg
+                          className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-neutral-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                          />
+                        </svg>
+                        <input
+                          type="text"
+                          placeholder="Search across filters..."
+                          value={filterSearchQuery}
+                          onChange={(e) => setFilterSearchQuery(e.target.value)}
+                          className="w-full pl-9 pr-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--customer-primary)] focus:bg-white text-xs text-neutral-700 placeholder:text-neutral-400"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Content Area */}
+                    <div className="flex flex-1 overflow-hidden min-h-[200px] max-h-[300px]">
+                      {/* Left Column - Filter Categories */}
+                      <div className="w-28 border-r border-neutral-200 flex-shrink-0 bg-neutral-50 py-1">
+                        <button
+                          onClick={() => setSelectedFilterCategory("Type")}
+                          className={`w-full px-3 py-2.5 text-left text-xs font-medium transition-colors ${
+                            selectedFilterCategory === "Type"
+                              ? "bg-[var(--customer-primary-alpha-10)] text-[var(--customer-primary-dark)] border-l-2 border-[var(--customer-primary-dark)] font-semibold"
+                              : "text-neutral-600 hover:bg-neutral-100"
+                          }`}>
+                          Type
+                        </button>
+                        <button
+                          onClick={() => setSelectedFilterCategory("Properties")}
+                          className={`w-full px-3 py-2.5 text-left text-xs font-medium transition-colors ${
+                            selectedFilterCategory === "Properties"
+                              ? "bg-[var(--customer-primary-alpha-10)] text-[var(--customer-primary-dark)] border-l-2 border-[var(--customer-primary-dark)] font-semibold"
+                              : "text-neutral-600 hover:bg-neutral-100"
+                          }`}>
+                          Properties
+                        </button>
+                      </div>
+
+                      {/* Right Column - Filter Options */}
+                      <div className="flex-1 overflow-y-auto p-2">
+                        {filteredOptions.length > 0 ? (
+                          filteredOptions.map((option) => {
+                            const isChecked = selectedFilters.includes(option.name);
+                            return (
+                              <button
+                                key={option.name}
+                                onClick={() => handleFilterToggle(option.name)}
+                                className="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-neutral-100/70 rounded-lg transition-colors text-left">
+                                <span className="text-base flex-shrink-0 w-5 h-5 flex items-center justify-center">
+                                  {option.icon}
+                                </span>
+                                <span className="flex-1 text-xs font-medium text-neutral-700 truncate">
+                                  {option.name}
+                                </span>
+                                <span className="text-xs text-neutral-400">
+                                  ({option.count})
+                                </span>
+                                <div className="w-4 h-4 flex items-center justify-center flex-shrink-0 ml-1">
+                                  {isChecked ? (
+                                    <div className="w-4 h-4 border border-[var(--customer-primary-dark)] bg-[var(--customer-primary-dark)] rounded flex items-center justify-center">
+                                      <svg
+                                        className="w-3 h-3 text-white"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={3}
+                                          d="M5 13l4 4L19 7"
+                                        />
+                                      </svg>
+                                    </div>
+                                  ) : (
+                                    <div className="w-4 h-4 border border-neutral-300 rounded bg-white" />
+                                  )}
+                                </div>
+                              </button>
+                            );
+                          })
+                        ) : (
+                          <div className="p-4 text-center text-xs text-neutral-400">
+                            No matching filters found
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Footer Buttons */}
+                    <div className="p-3 border-t border-neutral-200 flex gap-2 bg-neutral-50/50">
+                      <button
+                        onClick={handleClearFilters}
+                        className="flex-1 px-3 py-2 border border-neutral-300 text-neutral-700 rounded-lg font-medium text-xs hover:bg-white hover:border-neutral-400 transition-colors bg-white shadow-sm">
+                        Clear Filter
+                      </button>
+                      <button
+                        onClick={handleApplyFilters}
+                        className={`flex-1 px-3 py-2 rounded-lg font-medium text-xs transition-colors shadow-sm ${
+                          selectedFilters.length > 0
+                            ? "bg-[var(--customer-primary-dark)] text-white hover:bg-[var(--customer-primary-darker)]"
+                            : "bg-neutral-300 text-neutral-500 cursor-not-allowed"
+                        }`}
+                        disabled={selectedFilters.length === 0}>
+                        Apply ({selectedFilters.length})
+                      </button>
+                    </div>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+
+            {/* Inline Sort Dropdown Menu */}
+            <AnimatePresence>
+              {isSortOpen && (
+                <>
+                  {/* Transparent overlay for dismiss on click outside */}
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsSortOpen(false)}
+                  />
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                    transition={{ duration: 0.15 }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute left-[76px] sm:left-24 top-full mt-1 z-50 w-48 bg-white rounded-xl shadow-2xl border border-neutral-200 py-1.5 overflow-hidden">
+                    {sortOptions.map((option) => (
+                      <button
+                        key={option.id}
+                        onClick={() => {
+                          setSortBy(option.id);
+                          setIsSortOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-3.5 py-2 text-xs text-left transition-colors ${
+                          sortBy === option.id
+                            ? "bg-[var(--customer-primary-alpha-10)] text-[var(--customer-primary-dark)] font-semibold"
+                            : "text-neutral-700 hover:bg-neutral-50"
+                        }`}>
+                        <span>{option.label}</span>
+                        {sortBy === option.id && (
+                          <svg
+                            className="w-4 h-4 text-[var(--customer-primary-dark)] flex-shrink-0 ml-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2.5}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        )}
+                      </button>
+                    ))}
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Scrollable Content */}
@@ -595,163 +853,6 @@ export default function CategoryPage() {
           </div>
         </div>
       </div>
-
-      {/* Filters Modal */}
-      <AnimatePresence>
-        {isFiltersOpen && (
-          <>
-            {/* Hide footer when modal is open */}
-            <style>{`
-              nav[class*="fixed bottom-0"] {
-                display: none !important;
-              }
-            `}</style>
-            <div className="fixed inset-0 z-[100]">
-              {/* Backdrop - Semi-transparent overlay */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="absolute inset-0 bg-black/40"
-                onClick={() => setIsFiltersOpen(false)}
-              />
-
-              {/* Modal - Slides up from bottom, compact size matching image */}
-              <motion.div
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                exit={{ y: "100%" }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                onClick={(e) => e.stopPropagation()}
-                className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl max-h-[70vh] flex flex-col">
-                {/* Header */}
-                <div className="px-5 py-4 border-b border-neutral-200">
-                  <h2 className="text-base font-bold text-neutral-900">
-                    Filters
-                  </h2>
-                </div>
-
-                {/* Search Bar */}
-                <div className="px-5 py-3 border-b border-neutral-200">
-                  <div className="relative">
-                    <svg
-                      className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-neutral-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                    <input
-                      type="text"
-                      placeholder="Search across filters..."
-                      value={filterSearchQuery}
-                      onChange={(e) => setFilterSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 bg-white border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--customer-primary)] focus:border-transparent text-sm text-neutral-700 placeholder:text-neutral-400"
-                    />
-                  </div>
-                </div>
-
-                {/* Content Area */}
-                <div className="flex flex-1 overflow-hidden min-h-0">
-                  {/* Left Column - Filter Categories */}
-                  <div className="w-24 border-r border-neutral-200 flex-shrink-0 bg-neutral-50">
-                    <button
-                      onClick={() => setSelectedFilterCategory("Type")}
-                      className={`w-full px-3 py-3 text-left text-sm font-medium transition-colors ${
-                        selectedFilterCategory === "Type"
-                          ? "bg-[var(--customer-primary-alpha-10)] text-[var(--customer-primary-dark)]"
-                          : "text-neutral-600 hover:bg-neutral-100"
-                      }`}>
-                      Type
-                    </button>
-                    <button
-                      onClick={() => setSelectedFilterCategory("Properties")}
-                      className={`w-full px-3 py-3 text-left text-sm font-medium transition-colors ${
-                        selectedFilterCategory === "Properties"
-                          ? "bg-[var(--customer-primary-alpha-10)] text-[var(--customer-primary-dark)]"
-                          : "text-neutral-600 hover:bg-neutral-100"
-                      }`}>
-                      Properties
-                    </button>
-                  </div>
-
-                  {/* Right Column - Filter Options */}
-                  <div className="flex-1 overflow-y-auto">
-                    <div className="p-4">
-                      {filteredOptions.map((option) => {
-                        const isChecked = selectedFilters.includes(option.name);
-                        return (
-                          <button
-                            key={option.name}
-                            onClick={() => handleFilterToggle(option.name)}
-                            className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-50 rounded-lg transition-colors">
-                            <span className="text-xl flex-shrink-0 w-6 h-6 flex items-center justify-center">
-                              {option.icon}
-                            </span>
-                            <span className="flex-1 text-left text-sm font-medium text-neutral-700">
-                              {option.name}
-                            </span>
-                            <span className="text-sm text-neutral-500">
-                              ({option.count})
-                            </span>
-                            <div className="w-5 h-5 flex items-center justify-center flex-shrink-0 ml-2">
-                              {isChecked ? (
-                                <div className="w-5 h-5 border-2 border-[var(--customer-primary-dark)] bg-[var(--customer-primary-dark)] rounded-sm flex items-center justify-center">
-                                  <svg
-                                    className="w-3 h-3 text-white"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={3}
-                                      d="M5 13l4 4L19 7"
-                                    />
-                                  </svg>
-                                </div>
-                              ) : (
-                                <div className="w-5 h-5 border-2 border-neutral-300 rounded-sm bg-white"></div>
-                              )}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-
-
-
-                {/* Footer Buttons */}
-                <div className="px-5 py-4 border-t border-neutral-200 flex gap-3 bg-white">
-                  <button
-                    onClick={handleClearFilters}
-                    className="flex-1 px-4 py-2.5 border border-[var(--customer-primary-dark)] text-[var(--customer-primary-dark)] rounded-lg font-medium text-sm hover:bg-[var(--customer-primary-alpha-10)] transition-colors bg-white">
-                    Clear Filter
-                  </button>
-                  <button
-                    onClick={handleApplyFilters}
-                    className={`flex-1 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors ${
-                      selectedFilters.length > 0
-                        ? "bg-[var(--customer-primary-dark)] text-white hover:bg-[var(--customer-primary-darker)]"
-                        : "bg-neutral-300 text-neutral-500 cursor-not-allowed"
-                    }`}
-                    disabled={selectedFilters.length === 0}>
-                    Apply
-                  </button>
-                </div>
-              </motion.div>
-            </div>
-          </>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

@@ -864,17 +864,16 @@ export default function Checkout() {
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white border-b border-neutral-200">
         <div className="px-4 md:px-6 lg:px-8 py-2 md:py-3 flex items-center justify-between">
-          {/* Back Arrow & Text */}
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-1 md:gap-2 text-neutral-800 bg-white border border-neutral-200 hover:bg-neutral-50 shadow-sm transition-all px-2.5 py-1 md:px-3.5 md:py-1.5 rounded-lg md:rounded-xl"
+            className="flex items-center gap-1.5 md:gap-2 text-[#0c5236] bg-[#eef6f3] border border-[#0c5236] hover:bg-[#e2f0eb] shadow-sm transition-all px-4 py-2 md:px-5 md:py-2 rounded-lg md:rounded-xl font-bold"
             aria-label="Go back"
           >
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-neutral-600">
-              <path d="M19 12H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 md:w-5 md:h-5 text-[#0c5236]">
+              <path d="M19 12H5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="text-xs md:text-base font-semibold">Back</span>
+            <span className="text-sm md:text-lg font-bold tracking-wide">Back</span>
           </button>
 
           {/* Title */}
@@ -1180,9 +1179,23 @@ export default function Checkout() {
                               >
                                 −
                               </button>
-                              <span className="text-sm font-bold text-[#d35400] min-w-[1rem] text-center">
-                                {item.quantity}
-                              </span>
+                               <input
+                                 type="number"
+                                 value={item.quantity || 1}
+                                 onChange={(e) => {
+                                   if (!prod) return;
+                                   const val = parseInt(e.target.value, 10);
+                                   if (!isNaN(val) && val >= 0) {
+                                     const vId = item.variantId || (prod as any).variantId || (prod as any).selectedVariant?._id || item.variant;
+                                     const vTitle = item.variation || (prod as any).variantTitle || (prod as any).pack;
+                                     const pId = prod.id || prod._id || '';
+                                     updateQuantity(pId as string, val, vId, vTitle);
+                                   }
+                                 }}
+                                 onClick={(e) => e.stopPropagation()}
+                                 className="w-10 h-6 text-center font-bold text-sm text-[#d35400] bg-transparent outline-none focus:bg-amber-50 rounded [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                 title="Type quantity manually"
+                               />
                               <button
                                 type="button"
                                 onClick={(e) => {

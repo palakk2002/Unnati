@@ -113,96 +113,6 @@ const ProductCard = memo(({
                 />
               </svg>
             </button>
-
-            {/* ADD Button or Quantity Stepper - Overlaid on bottom right of image */}
-            <div className="absolute bottom-1.5 right-1.5 z-20">
-              <AnimatePresence mode="wait">
-                {inCartQty === 0 ? (
-                  <motion.button
-                    key="add-button"
-                    type="button"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ duration: 0.2 }}
-                    disabled={product.isAvailable === false}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onAddToCart(product, e.currentTarget);
-                    }}
-                    className={`rounded-lg font-bold text-[9px] md:text-xs h-6 md:h-8 px-3 md:px-4 flex items-center justify-center gap-1 uppercase tracking-wider transition-all duration-300 border shadow-sm ${
-                      product.isAvailable === false
-                      ? 'bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed'
-                      : 'bg-white/95 backdrop-blur-sm text-[var(--customer-primary)] border-[var(--customer-primary)] hover:bg-[var(--customer-primary-dark)] hover:text-white hover:border-[var(--customer-primary-dark)]'
-                    }`}
-                  >
-                    {product.isAvailable === false ? (
-                      'Out of Stock'
-                    ) : (
-                      <>
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="12" y1="5" x2="12" y2="19"></line>
-                          <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                        <span>ADD</span>
-                      </>
-                    )}
-                  </motion.button>
-                ) : (
-                  <motion.div
-                    key="stepper"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ duration: 0.2 }}
-                    className="flex items-center gap-1.5 bg-[var(--customer-primary-alpha-10)] rounded-lg px-1 py-0.5 h-6 md:h-8 border border-[var(--customer-primary-alpha-30)] shadow-sm"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <motion.button
-                      whileTap={{ scale: 0.9 }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        onUpdateQuantity(product.id, inCartQty - 1, undefined, product.pack);
-                      }}
-                      className="w-4 h-4 md:w-6 md:h-6 flex items-center justify-center bg-white hover:bg-[var(--customer-primary-alpha-20)] rounded-full shadow-sm text-[var(--customer-primary-dark)] transition-colors border border-[var(--customer-primary-alpha-20)]"
-                    >
-                      <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                      </svg>
-                    </motion.button>
-                    <motion.span
-                      key={inCartQty}
-                      initial={{ scale: 1.2, y: -1 }}
-                      animate={{ scale: 1, y: 0 }}
-                      transition={{ type: 'spring', stiffness: 500, damping: 15 }}
-                      className="text-[var(--customer-primary-dark)] font-black min-w-[0.75rem] text-center"
-                      style={{ fontSize: '12px' }}
-                    >
-                      {inCartQty}
-                    </motion.span>
-                    <motion.button
-                      whileTap={product.isAvailable === false ? {} : { scale: 0.9 }}
-                      disabled={product.isAvailable === false}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        onUpdateQuantity(product.id, inCartQty + 1, undefined, product.pack);
-                      }}
-                      className={`w-4 h-4 md:w-6 md:h-6 flex items-center justify-center bg-white hover:bg-[var(--customer-primary-alpha-20)] rounded-full shadow-sm text-[var(--customer-primary-dark)] transition-colors border border-[var(--customer-primary-alpha-20)] ${
-                        product.isAvailable === false ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
-                    >
-                      <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                      </svg>
-                    </motion.button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
           </div>
         </div>
 
@@ -258,7 +168,7 @@ const ProductCard = memo(({
           )}
 
           {/* Price */}
-          <div className="mb-1 md:mb-3 mt-auto w-full">
+          <div className="mb-1 md:mb-2 mt-auto w-full">
             <div className="flex items-baseline justify-end gap-1 md:gap-1.5 flex-wrap">
               <span className="text-base md:text-[20px] font-black text-[var(--customer-primary)]">
                 ₹{displayPrice.toLocaleString('en-IN')}
@@ -269,6 +179,96 @@ const ProductCard = memo(({
                 </span>
               )}
             </div>
+          </div>
+
+          {/* ADD Button or Quantity Stepper - Placed between real price and See more like this */}
+          <div className="w-full my-1.5 flex justify-end">
+            <AnimatePresence mode="wait">
+              {inCartQty === 0 ? (
+                <motion.button
+                  key="add-button"
+                  type="button"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                  disabled={product.isAvailable === false}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onAddToCart(product, e.currentTarget);
+                  }}
+                  className={`rounded-lg font-bold text-[9px] md:text-xs h-7 md:h-8 px-3 md:px-4 flex items-center justify-center gap-1 uppercase tracking-wider transition-all duration-300 border shadow-sm ${
+                    product.isAvailable === false
+                    ? 'bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed'
+                    : 'bg-white/95 backdrop-blur-sm text-[var(--customer-primary)] border-[var(--customer-primary)] hover:bg-[var(--customer-primary-dark)] hover:text-white hover:border-[var(--customer-primary-dark)]'
+                  }`}
+                >
+                  {product.isAvailable === false ? (
+                    'Out of Stock'
+                  ) : (
+                    <>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                      <span>ADD</span>
+                    </>
+                  )}
+                </motion.button>
+              ) : (
+                <motion.div
+                  key="stepper"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center gap-1.5 bg-[var(--customer-primary-alpha-10)] rounded-lg px-2 py-0.5 h-7 md:h-8 border border-[var(--customer-primary-alpha-30)] shadow-sm"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <motion.button
+                    whileTap={{ scale: 0.9 }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onUpdateQuantity(product.id, inCartQty - 1, undefined, product.pack);
+                    }}
+                    className="w-4 h-4 md:w-6 md:h-6 flex items-center justify-center bg-white hover:bg-[var(--customer-primary-alpha-20)] rounded-full shadow-sm text-[var(--customer-primary-dark)] transition-colors border border-[var(--customer-primary-alpha-20)]"
+                  >
+                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                  </motion.button>
+                  <motion.span
+                    key={inCartQty}
+                    initial={{ scale: 1.2, y: -1 }}
+                    animate={{ scale: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+                    className="text-[var(--customer-primary-dark)] font-black min-w-[0.75rem] text-center"
+                    style={{ fontSize: '12px' }}
+                  >
+                    {inCartQty}
+                  </motion.span>
+                  <motion.button
+                    whileTap={product.isAvailable === false ? {} : { scale: 0.9 }}
+                    disabled={product.isAvailable === false}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onUpdateQuantity(product.id, inCartQty + 1, undefined, product.pack);
+                    }}
+                    className={`w-4 h-4 md:w-6 md:h-6 flex items-center justify-center bg-white hover:bg-[var(--customer-primary-alpha-20)] rounded-full shadow-sm text-[var(--customer-primary-dark)] transition-colors border border-[var(--customer-primary-alpha-20)] ${
+                      product.isAvailable === false ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="12" y1="5" x2="12" y2="19"></line>
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                  </motion.button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Bottom Link */}
@@ -379,6 +379,7 @@ export default function LowestPricesEver({ activeTab = 'all', products: adminPro
         imageUrl: p.mainImage || p.imageUrl || p.mainImage,
         mrp: p.mrp || p.price,
         pack: packValue,
+        isAvailable: p.isAvailable !== false,
       };
     });
 

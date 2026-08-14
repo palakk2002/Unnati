@@ -28,6 +28,8 @@ import {
 } from '../../../services/api/seller/sellerPurchaseService';
 import { getAllSuppliers } from '../../../services/api/seller/supplierService';
 import { useSellerPosBillSettings } from '../hooks/useSellerPosBillSettings';
+import { LocationFilterDropdown, filterItemsByLocation, LocationFilterState } from '../../../components/LocationFilterDropdown';
+import { RackLocationDropdown } from '../../../components/RackLocationDropdown';
 
 // Interface for Cart Item extending Product
 export interface CartItem extends Product {
@@ -164,6 +166,99 @@ const SellerPOSOrders = () => {
     };
   }, []);
 
+  const DUMMY_POS_CART_ITEMS: CartItem[] = [
+    {
+      _id: 'dummy_pos_item_1',
+      productName: 'CAP_Test_28-07 - Default',
+      price: 200,
+      compareAtPrice: 250,
+      qty: 1,
+      rackNumber: 'Rack-101',
+      storageLocation: {
+        city: 'Mumbai',
+        warehouse: 'Mumbai Central Warehouse (MC-01)',
+        room: 'Room A',
+        rackNumber: 'Rack-101'
+      },
+      stock: 50,
+      sku: 'CAP-2807',
+      description: '',
+      category: 'Default',
+      seller: '',
+      galleryImages: [],
+      publish: true,
+      popular: false,
+      dealOfDay: false,
+      status: 'Active',
+      isReturnable: true,
+      tags: [],
+      requiresApproval: false,
+      totalAllowedQuantity: 10,
+      galleryImageUrls: [],
+      variations: []
+    } as any,
+    {
+      _id: 'dummy_pos_item_2',
+      productName: 'CAPITAL BULUBUL NANO RS20',
+      price: 160,
+      compareAtPrice: 180,
+      qty: 1,
+      rackNumber: 'Rack-102',
+      storageLocation: {
+        city: 'Delhi',
+        warehouse: 'Okhla Warehouse (OW-01)',
+        room: 'Room B',
+        rackNumber: 'Rack-102'
+      },
+      stock: 35,
+      sku: 'CAP-BUL-NANO',
+      description: '',
+      category: 'Electronics',
+      seller: '',
+      galleryImages: [],
+      publish: true,
+      popular: false,
+      dealOfDay: false,
+      status: 'Active',
+      isReturnable: true,
+      tags: [],
+      requiresApproval: false,
+      totalAllowedQuantity: 10,
+      galleryImageUrls: [],
+      variations: []
+    } as any,
+    {
+      _id: 'dummy_pos_item_3',
+      productName: 'CAPITAL BULBUL KHUTI RS20',
+      price: 150,
+      compareAtPrice: 160,
+      qty: 1,
+      rackNumber: 'Rack-205',
+      storageLocation: {
+        city: 'Mumbai',
+        warehouse: 'Andheri Warehouse (AW-02)',
+        room: 'Room C',
+        rackNumber: 'Rack-205'
+      },
+      stock: 20,
+      sku: 'CAP-BUL-KHUTI',
+      description: '',
+      category: 'Hardware',
+      seller: '',
+      galleryImages: [],
+      publish: true,
+      popular: false,
+      dealOfDay: false,
+      status: 'Active',
+      isReturnable: true,
+      tags: [],
+      requiresApproval: false,
+      totalAllowedQuantity: 10,
+      galleryImageUrls: [],
+      variations: []
+    } as any,
+  ];
+
   // Multi-Bill State
   const [bills, setBills] = useState<Bill[]>(() => {
     try {
@@ -173,9 +268,9 @@ const SellerPOSOrders = () => {
         if (Array.isArray(parsed) && parsed.length > 0) {
           const normalized = parsed.map((bill: Bill) => ({
             ...bill,
-            cart: Array.isArray(bill.cart)
+            cart: Array.isArray(bill.cart) && bill.cart.length > 0
               ? bill.cart.map((item) => normalizePosCartItem(item as CartItem))
-              : [],
+              : DUMMY_POS_CART_ITEMS,
           }));
           if (normalized.length === 1) {
              normalized[0] = { ...normalized[0], name: 'Bill 1' };
@@ -189,7 +284,7 @@ const SellerPOSOrders = () => {
     return [{
       id: '1',
       name: 'Bill 1',
-      cart: [],
+      cart: DUMMY_POS_CART_ITEMS,
       selectedCustomer: null,
       customerSearch: '',
       paymentMethod: 'Cash',
@@ -197,6 +292,7 @@ const SellerPOSOrders = () => {
       createdAt: Date.now()
     }];
   });
+
 
   const [activeBillId, setActiveBillId] = useState<string>(() => {
     return localStorage.getItem('seller_pos_active_bill') || '1';
@@ -325,7 +421,6 @@ const SellerPOSOrders = () => {
 
   const setPaymentMethod = (method: string) => {
       updateActiveBill({ paymentMethod: method });
-      setShowPaymentDropdown(false);
   };
 
   const setOrderType = (type: 'Retail' | 'Wholesale') => {
@@ -563,8 +658,9 @@ const SellerPOSOrders = () => {
   const [purchaseEditForm, setPurchaseEditForm] = useState({ name: '', price: '', qty: '', mrp: '', purchasePrice: '', wholesalePrice: '', warrantyType: 'None' as "None" | "Warranty" | "Guarantee", warrantyDuration: '', hsnCode: '', gst: '5' });
 
   // New UI States
-  const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
   const [showProfit, setShowProfit] = useState(false);
+  const [locationFilter, setLocationFilter] = useState<LocationFilterState>({ filterType: 'all', filterValue: '' });
+  const [locationDisplayAttr, setLocationDisplayAttr] = useState<'rack' | 'city' | 'warehouse' | 'room'>('rack');
 
   // Customer Search State
   // const [customerSearch, setCustomerSearch] = useState(''); // Removed global
@@ -3691,35 +3787,31 @@ const SellerPOSOrders = () => {
 
           {/* Bill Tabs */}
 
-            <div className="flex-none flex items-center gap-2 px-2 pt-2 overflow-x-auto border-b border-gray-200 bg-gray-50">
+            <div className="flex-none flex items-center gap-2 px-2.5 pt-2 overflow-x-auto border-b border-gray-200 bg-gray-50">
               {bills.map(bill => (
                 <div
                   key={bill.id}
                   onClick={() => setActiveBillId(bill.id)}
                   className={`
-                    flex items-center gap-2.5 pl-3 pr-2 py-2 rounded-t-lg cursor-pointer border-t border-l border-r transition-all min-w-[105px] justify-between select-none
+                    flex items-center gap-2.5 pl-3.5 pr-2.5 py-2 sm:py-2.5 rounded-none cursor-pointer border-t border-l border-r transition-all min-w-[115px] sm:min-w-[125px] justify-between select-none
                     ${String(activeBillId) === String(bill.id)
-                      ? 'bg-[#0d055a] border-[#0d055a] border-b-transparent text-white relative -mb-[1px] z-10 shadow-[0_-2px_4px_rgba(0,0,0,0.02)]'
-                      : 'bg-gray-100 border-gray-200 text-gray-500 hover:bg-gray-200/50'}
+                      ? 'bg-[#0d055a] border-[#0d055a] border-b-transparent text-white relative -mb-[1px] z-10 shadow-[0_-2px_4px_rgba(0,0,0,0.04)]'
+                      : 'bg-gray-600 border-gray-600 text-white hover:bg-gray-700'}
                   `}
                 >
                   <span
                     style={{
-                      color: String(activeBillId) === String(bill.id) ? '#ffffff' : '#4b5563',
-                      textShadow: String(activeBillId) === String(bill.id) ? '0 1px 2px rgba(0,0,0,0.4)' : 'none'
+                      color: '#ffffff',
+                      textShadow: '0 1px 2px rgba(0,0,0,0.4)'
                     }}
-                    className={`truncate text-sm font-bold tracking-wide ${String(activeBillId) === String(bill.id) ? 'force-text-white' : ''}`}
+                    className="truncate text-sm sm:text-base font-bold tracking-wide text-white force-text-white"
                   >
                     {bill.name}
                   </span>
                   <button
                     onClick={(e) => closeBill(bill.id, e)}
-                    style={{ color: String(activeBillId) === String(bill.id) ? '#ffffff' : undefined }}
-                    className={`rounded-full p-0.5 ml-auto transition-colors ${
-                      String(activeBillId) === String(bill.id)
-                        ? 'text-white hover:bg-white/20'
-                        : 'hover:bg-red-100 text-gray-400 hover:text-red-500'
-                    }`}
+                    style={{ color: '#ffffff' }}
+                    className="rounded-full p-0.5 ml-auto transition-colors text-white hover:bg-white/20"
                     title="Close Bill"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -3729,7 +3821,7 @@ const SellerPOSOrders = () => {
 
               <button
                 onClick={() => createNewBill()}
-                className="flex items-center justify-center gap-1.5 px-3 py-1 h-8 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors ml-2 flex-shrink-0 shadow-sm text-xs font-bold"
+                className="flex items-center justify-center gap-1.5 px-3 py-1.5 h-9 rounded-none bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 transition-colors ml-2 flex-shrink-0 shadow-sm text-xs sm:text-sm font-bold"
                 title="New Bill"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path></svg>
@@ -3743,29 +3835,26 @@ const SellerPOSOrders = () => {
               <div className="flex-none px-4 pt-2 pb-1 md:hidden">
                    {/* Payment Method + View Toggle (Mobile Row) */}
                    <div className="flex items-center gap-2 mb-2">
-                       <div className="relative flex-[0_0_58%]">
-                           <button
-                               onClick={() => setShowPaymentDropdown(!showPaymentDropdown)}
-                               className="w-full flex items-center justify-between bg-white border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs text-gray-700 hover:border-gray-400 focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)]"
-                           >
-                               <span className="font-medium truncate">{paymentMethod || 'Cash'}</span>
-                               <svg className={`w-4 h-4 text-gray-400 transition-transform ${showPaymentDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                           </button>
-
-                           {showPaymentDropdown && (
-                               <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
-                                   {['Cash', 'PhonePe', 'Credit'].map((method) => (
-                                       <div
-                                           key={method}
-                                           onClick={() => setPaymentMethod(method)}
-                                           className="flex items-center justify-between px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-50 last:border-0"
-                                       >
-                                           <span className="text-sm font-medium text-gray-700">{method === 'Credit' ? 'Credit (Udhaar)' : method}</span>
-                                           <span className="text-gray-300">→</span>
-                                       </div>
-                                   ))}
-                               </div>
-                           )}
+                       <div className="flex-[0_0_65%] grid grid-cols-3 gap-1">
+                           {[
+                               { id: 'Cash', label: 'Cash' },
+                               { id: 'PhonePe', label: 'PhonePe' },
+                               { id: 'Credit', label: 'Credit (Udhaar)' }
+                           ].map((m) => (
+                               <button
+                                   key={m.id}
+                                   type="button"
+                                   onClick={() => setPaymentMethod(m.id)}
+                                   className={`py-1.5 px-1 rounded-lg border text-[10px] font-bold transition-all text-center leading-tight truncate ${
+                                       paymentMethod === m.id
+                                           ? 'bg-[#0d055a] text-white border-[#0d055a] shadow-sm'
+                                           : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                                   }`}
+                                   title={m.label}
+                               >
+                                   {m.label === 'Credit (Udhaar)' ? 'Credit' : m.label}
+                               </button>
+                           ))}
                        </div>
 
                        <div className="flex-1 flex justify-end">
@@ -3886,6 +3975,17 @@ const SellerPOSOrders = () => {
               <div className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden relative">
                   {/* Cart Items List Wrapper */}
                   <div className="flex-1 min-h-0 overflow-hidden w-full flex flex-col">
+                      {/* Location Filter Dropdown Bar */}
+                      {cart.length > 0 && (
+                        <div className="px-4 py-2 bg-gray-50/80 border-b border-gray-200">
+                          <LocationFilterDropdown
+                            items={cart}
+                            filterState={locationFilter}
+                            onChange={setLocationFilter}
+                            compact={true}
+                          />
+                        </div>
+                      )}
                       {/* Scrollable Product Container */}
                       <div className="flex-1 min-h-0 overflow-y-auto p-4 pb-40 lg:p-4 lg:pb-0 lg:overflow-y-auto custom-pos-scroll mt-4">
                           <div className={mobileCartView === 'grid'
@@ -3893,28 +3993,59 @@ const SellerPOSOrders = () => {
                               : 'space-y-2 flex flex-col'
                           }>
                               {/* Desktop Header Row */}
-                              <div className="hidden lg:grid gap-2 text-xs font-bold text-gray-400 pb-2 border-b border-gray-100 px-2 sticky top-0 bg-white z-10" style={{ gridTemplateColumns: 'repeat(13, minmax(0, 1fr))' }}>
+                              <div className="hidden lg:grid gap-2 text-xs font-bold text-gray-400 pb-2 border-b border-gray-100 px-2 sticky top-0 bg-white z-10" style={{ gridTemplateColumns: 'repeat(14, minmax(0, 1fr))' }}>
                                   <div className="col-span-1 text-center">Sr.no</div>
                                   <div className="col-span-1 text-center">Edit</div>
                                   <div className="col-span-1 text-center">Image</div>
                                   <div className="col-span-2">Name</div>
-                                  <div className="col-span-1 text-center">Rack No.</div>
+                                  <div className="col-span-2 text-center flex items-center justify-center">
+                                    <div className="relative inline-flex items-center">
+                                      <select
+                                        value={locationDisplayAttr}
+                                        onChange={(e) => setLocationDisplayAttr(e.target.value as any)}
+                                        className="appearance-none bg-transparent hover:bg-gray-100 font-bold text-xs text-gray-700 pr-4 pl-1 py-0.5 rounded cursor-pointer outline-none focus:ring-1 focus:ring-[var(--primary-color)] transition-all text-center"
+                                      >
+                                        <option value="rack">Rack No.</option>
+                                        <option value="city">City</option>
+                                        <option value="warehouse">Warehouse</option>
+                                        <option value="room">Room</option>
+                                      </select>
+                                      <svg className="w-3 h-3 text-gray-500 absolute right-0 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                      </svg>
+                                    </div>
+                                  </div>
                                   <div className="col-span-1 text-center">MRP</div>
+
                                   <div className="col-span-2 text-center">Quantity</div>
                                   <div className="col-span-2 text-center">Retail Price</div>
                                   <div className="col-span-1 text-center">Sub Total</div>
                                   <div className="col-span-1 text-center">Delete</div>
                               </div>
 
-                              {cart.length === 0 ? (
-                                  <div className="flex-1 flex flex-col items-center justify-center text-gray-400 min-h-[200px]">
-                                      <svg className="w-12 h-12 mb-2 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                                      <span className="text-sm">Cart is empty</span>
-                                  </div>
-                              ) : (
-                                  cart.map((item, index) => {
+                              {(() => {
+                                  const filteredCart = filterItemsByLocation(cart, locationFilter);
+                                  if (cart.length === 0) {
+                                      return (
+                                          <div className="flex-1 flex flex-col items-center justify-center text-gray-400 min-h-[200px]">
+                                              <svg className="w-12 h-12 mb-2 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                              <span className="text-sm">Cart is empty</span>
+                                          </div>
+                                      );
+                                  }
+                                  if (filteredCart.length === 0) {
+                                      return (
+                                          <div className="flex-1 flex flex-col items-center justify-center text-gray-500 min-h-[160px] bg-amber-50/50 rounded-xl p-4 border border-amber-200">
+                                              <svg className="w-10 h-10 mb-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /></svg>
+                                              <span className="text-sm font-bold text-gray-700">No items match "{locationFilter.filterValue}" ({locationFilter.filterType})</span>
+                                              <button type="button" onClick={() => setLocationFilter({ filterType: 'all', filterValue: '' })} className="mt-2 text-xs text-[var(--primary-color)] font-bold hover:underline">Show All Cart Items</button>
+                                          </div>
+                                      );
+                                  }
+                                  return filteredCart.map((item, index) => {
                                       const sp = getEffectivePrice(item);
                                       const mrp = item.compareAtPrice || sp;
+
                                       const purchasePrice = item.purchasePrice || 0;
                                       const profit = sp - purchasePrice;
                                       const profitPercent = purchasePrice > 0 ? ((profit / purchasePrice) * 100).toFixed(2) : '0.00';
@@ -4047,7 +4178,7 @@ const SellerPOSOrders = () => {
                                           )}
 
                                           {/* --- DESKTOP VIEW (Table Row Style) --- */}
-                                          <div className="hidden lg:grid gap-2 items-center py-0.5 px-2 border-b border-gray-100 hover:bg-gray-50/80 transition-all even:bg-gray-50/20" style={{ gridTemplateColumns: 'repeat(13, minmax(0, 1fr))' }}>
+                                          <div className="hidden lg:grid gap-2 items-center py-0.5 px-2 border-b border-gray-100 hover:bg-gray-50/80 transition-all even:bg-gray-50/20" style={{ gridTemplateColumns: 'repeat(14, minmax(0, 1fr))' }}>
                                                {/* Sr No */}
                                                <div className="col-span-1 text-center text-gray-500 text-xs font-bold">
                                                    {index + 1}
@@ -4089,35 +4220,23 @@ const SellerPOSOrders = () => {
                                                    )}
                                                 </div>
 
-                                                {/* Rack Number */}
-                                                <div className="col-span-1 flex justify-center relative">
-                                                    <button
-                                                       type="button"
-                                                       onClick={(e) => {
-                                                           e.stopPropagation();
-                                                           setShowLocationPopup(showLocationPopup === getCartLineId(item) ? null : getCartLineId(item));
-                                                       }}
-                                                       className="h-8 px-2 bg-gray-50 border border-gray-200 hover:border-[var(--primary-color)] rounded-lg text-xs font-bold text-gray-700 hover:bg-gray-100 transition-all inline-flex items-center justify-center gap-1 shadow-sm"
-                                                       title="Click to view full storage location"
-                                                    >
-                                                        <span className="truncate max-w-[45px]">{(item as any).storageLocation?.rackNumber || item.rackNumber || "-"}</span>
-                                                        <svg className="w-2.5 h-2.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
-                                                    </button>
-                                                    {showLocationPopup === getCartLineId(item) && (
-                                                        <div className="absolute z-50 bg-white border border-gray-200 rounded-xl shadow-xl p-3 text-left text-xs min-w-[200px] mt-1 left-1/2 -translate-x-1/2">
-                                                            <div className="flex justify-between items-center border-b border-gray-100 pb-1 mb-1.5">
-                                                                <span className="font-bold text-gray-800">Storage Location</span>
-                                                                <button type="button" onClick={() => setShowLocationPopup(null)} className="text-gray-400 hover:text-gray-600 font-bold">✕</button>
-                                                            </div>
-                                                            <div className="space-y-1 text-gray-700">
-                                                                <p><span className="text-gray-400">City:</span> <span className="font-bold">{(item as any).storageLocation?.city || '-'}</span></p>
-                                                                <p><span className="text-gray-400">Warehouse:</span> <span className="font-bold">{(item as any).storageLocation?.warehouse || '-'}</span></p>
-                                                                <p><span className="text-gray-400">Room:</span> <span className="font-bold">{(item as any).storageLocation?.room || '-'}</span></p>
-                                                                <p><span className="text-gray-400">Rack Number:</span> <span className="font-bold">{(item as any).storageLocation?.rackNumber || item.rackNumber || '-'}</span></p>
-                                                            </div>
-                                                        </div>
-                                                    )}
+                                                {/* Rack Number Selection */}
+                                                <div className="col-span-2 flex items-center justify-center relative">
+                                                    <RackLocationDropdown
+                                                        item={item as any}
+                                                        displayAttribute={locationDisplayAttr}
+                                                        onUpdateRack={(newRack) => {
+                                                            updateItemDetails(getCartLineId(item), {
+                                                                rackNumber: newRack,
+                                                                storageLocation: {
+                                                                    ...((item as any).storageLocation || {}),
+                                                                    rackNumber: newRack
+                                                                }
+                                                            });
+                                                        }}
+                                                    />
                                                 </div>
+
                                                                            {/* MRP Input */}
                                                <div className="col-span-1">
                                                      <input
@@ -4185,69 +4304,67 @@ const SellerPOSOrders = () => {
                                        </React.Fragment>
                                   );
                               })
-                          )}
+                          })()}
                           </div>
                       </div>
                   </div>
               </div>
           </div>
       </div>
-               {/* End Left Main Column */}
-
-                   {/* Desktop Sidebar (New Two-Column Layout) */}
-                    <div className="hidden md:flex w-[320px] bg-gray-50 border-l border-gray-200 flex-col p-2 pt-1 shadow-[inset_4px_0_24px_-12px_rgba(0,0,0,0.1)] z-20 overflow-hidden">
-                        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 pr-1">
+                                  {/* Desktop Sidebar (New Two-Column Layout) */}
+                    <div className="hidden md:flex w-[320px] bg-gray-50 border-l border-gray-200 flex-col p-2 pt-1 shadow-[inset_4px_0_24px_-12px_rgba(0,0,0,0.1)] z-20 overflow-hidden justify-between">
+                        <div className="flex-1 flex flex-col justify-start min-h-0 pr-0.5 overflow-y-auto">
 
                       {/* --- QUICK ACTIONS --- */}
-                        <div className="mb-2">
-                            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-2">Quick Actions</h3>
-                            <div className="grid grid-cols-2 gap-1.5">
+                        <div className="mb-1.5">
+                            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Quick Actions</h3>
+                            <div className="grid grid-cols-2 gap-1">
                                 <button
                                   onClick={() => setShowQuickAdd(true)}
-                                  className="flex items-center gap-2 p-1.5 bg-[#0d055a] border border-[#0d055a] rounded-xl hover:shadow-md transition-all group"
+                                  className="flex items-center gap-1.5 p-1 bg-[#0d055a] border border-[#0d055a] rounded-lg hover:shadow-md transition-all group"
                                 >
-                                    <div className="w-7 h-7 bg-white/10 text-white rounded-lg flex items-center justify-center group-hover:bg-white group-hover:text-[#0d055a] transition-colors">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+                                    <div className="w-6 h-6 bg-white/10 text-white rounded flex items-center justify-center group-hover:bg-white group-hover:text-[#0d055a] transition-colors">
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[11px] font-bold text-white">Quick Add</p>
+                                        <p className="text-[10px] font-bold text-white">Quick Add</p>
                                     </div>
                                 </button>
 
                                 <button
                                   onClick={() => setShowAddCustomerModal(true)}
-                                  className="flex items-center gap-2 p-1.5 bg-[#0d055a] border border-[#0d055a] rounded-xl hover:shadow-md transition-all group"
+                                  className="flex items-center gap-1.5 p-1 bg-[#0d055a] border border-[#0d055a] rounded-lg hover:shadow-md transition-all group"
                                 >
-                                    <div className="w-7 h-7 bg-white/10 text-white rounded-lg flex items-center justify-center group-hover:bg-white group-hover:text-[#0d055a] transition-colors">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+                                    <div className="w-6 h-6 bg-white/10 text-white rounded flex items-center justify-center group-hover:bg-white group-hover:text-[#0d055a] transition-colors">
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[11px] font-bold text-white">Add Cust.</p>
+                                        <p className="text-[10px] font-bold text-white">Add Cust.</p>
                                     </div>
                                 </button>
 
                                 <button
                                   onClick={() => navigate('/seller/pos/customers')}
-                                  className="flex items-center gap-2 p-1.5 bg-white border border-gray-200 rounded-xl hover:border-[var(--primary-color)] hover:shadow-md transition-all group col-span-2"
+                                  className="flex items-center gap-1.5 p-1 bg-white border border-gray-200 rounded-lg hover:border-[var(--primary-color)] hover:shadow-md transition-all group col-span-2"
                                 >
-                                    <div className="w-7 h-7 bg-[var(--primary-alpha-10)] text-[var(--primary-dark)] rounded-lg flex items-center justify-center group-hover:bg-[var(--primary-color)] group-hover:text-white transition-colors">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                                    <div className="w-6 h-6 bg-[var(--primary-alpha-10)] text-[var(--primary-dark)] rounded flex items-center justify-center group-hover:bg-[var(--primary-color)] group-hover:text-white transition-colors">
+                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[11px] font-bold text-gray-800">Customer Credit (Udhaar)</p>
+                                        <p className="text-[10px] font-bold text-gray-800">Customer Credit (Udhaar)</p>
                                     </div>
                                 </button>
                             </div>
                         </div>
 
                       {/* --- CUSTOMER SELECTION --- */}
-                        <div className="mb-3 p-2.5 bg-white border border-gray-200 rounded-2xl shadow-sm">
-                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1.5">Customer Selection</label>
+                        <div className="mb-1.5 p-1.5 bg-white border border-gray-200 rounded-xl shadow-sm">
+                            <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Customer Selection</label>
                             <div className="relative">
                                 <input
                                     type="text"
                                     placeholder="Search Customer..."
-                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 focus:border-[var(--primary-color)] transition-all"
+                                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 focus:border-[var(--primary-color)] transition-all"
                                     value={customerSearch}
                                     onChange={(e) => {
                                       setCustomerSearch(e.target.value);
@@ -4260,7 +4377,7 @@ const SellerPOSOrders = () => {
                                   onBlur={() => setTimeout(() => setShowCustomerDropdown(false), 200)}
                               />
                               {selectedCustomer && (
-                                  <button onClick={clearCustomer} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500">✕</button>
+                                  <button onClick={clearCustomer} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 text-xs">✕</button>
                               )}
                               {showCustomerDropdown && customers.length > 0 && (
                                   <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl max-h-60 overflow-y-auto p-1">
@@ -4280,74 +4397,75 @@ const SellerPOSOrders = () => {
                       </div>
 
                       {/* --- ORDER TYPE --- */}
-                         <div className="mb-2.5">
-                            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1.5">Order Type</label>
-                             <div className="bg-gray-200 p-1 rounded-xl flex relative h-11 items-center">
+                         <div className="mb-1.5">
+                            <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Order Type</label>
+                             <div className="bg-gray-200 p-0.5 rounded-lg flex relative h-8 items-center">
                                  <div
-                                     className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-[#0d055a] rounded-lg transition-all duration-300 ease-in-out shadow-sm ${orderType === 'Wholesale' ? 'left-[calc(50%+2px)]' : 'left-1'}`}
+                                     className={`absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-[#0d055a] rounded-md transition-all duration-300 ease-in-out shadow-sm ${orderType === 'Wholesale' ? 'left-[calc(50%+1px)]' : 'left-0.5'}`}
                                  ></div>
-                                <button onClick={() => setOrderType('Retail')} className={`flex-1 relative z-10 text-center text-sm font-bold transition-colors ${orderType === 'Retail' ? 'text-white' : 'text-gray-500'} h-full`}>Retail</button>
-                                <button onClick={() => setOrderType('Wholesale')} className={`flex-1 relative z-10 text-center text-sm font-bold transition-colors ${orderType === 'Wholesale' ? 'text-white' : 'text-gray-500'} h-full`}>Wholesale</button>
+                                <button onClick={() => setOrderType('Retail')} className={`flex-1 relative z-10 text-center text-xs font-bold transition-colors ${orderType === 'Retail' ? 'text-white' : 'text-gray-500'} h-full`}>Retail</button>
+                                <button onClick={() => setOrderType('Wholesale')} className={`flex-1 relative z-10 text-center text-xs font-bold transition-colors ${orderType === 'Wholesale' ? 'text-white' : 'text-gray-500'} h-full`}>Wholesale</button>
                             </div>
                         </div>
 
                       {/* --- PAYMENT METHOD --- */}
-                         <div className="mb-2.5">
-                              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1.5">Payment Method</label>
-                              <div className="relative">
-                                  <button
-                                      onClick={() => setShowPaymentDropdown(!showPaymentDropdown)}
-                                      className="w-full flex items-center justify-between bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 hover:border-[var(--primary-color)] transition-all shadow-sm h-9"
-                                >
-                                    <span>{paymentMethod || 'Cash'}</span>
-                                    <svg className={`w-3 h-3 text-gray-400 transition-transform ${showPaymentDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                                </button>
-                               {showPaymentDropdown && (
-                                   <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden p-1">
-                                       {['Cash', 'PhonePe', 'Credit'].map((method) => (
-                                           <div
-                                               key={method}
-                                               onClick={() => { setPaymentMethod(method); setShowPaymentDropdown(false); }}
-                                               className="flex items-center justify-between px-3 py-2.5 hover:bg-gray-50 cursor-pointer rounded-lg text-xs font-medium text-gray-700"
-                                           >
-                                               <span>{method === 'Credit' ? 'Credit (Udhaar)' : method}</span>
-                                               <span className="text-gray-300 text-xs">→</span>
-                                           </div>
-                                       ))}
-                                   </div>
-                               )}
-                           </div>
-                       </div>
+                         <div className="mb-2">
+                              <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Payment Method</label>
+                              <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm divide-y divide-gray-100">
+                                  {[
+                                      { id: 'Cash', label: 'Cash' },
+                                      { id: 'PhonePe', label: 'PhonePe' },
+                                      { id: 'Credit', label: 'Credit (Udhaar)' }
+                                  ].map((m) => {
+                                      const isSelected = paymentMethod === m.id;
+                                      return (
+                                          <button
+                                              key={m.id}
+                                              type="button"
+                                              onClick={() => setPaymentMethod(m.id)}
+                                              className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-bold transition-all text-left ${
+                                                  isSelected
+                                                      ? 'bg-[#0d055a] text-white'
+                                                      : 'bg-white text-gray-700 hover:bg-gray-50'
+                                              }`}
+                                          >
+                                              <span className="text-xs font-bold">{m.label}</span>
+                                              <span className={`text-xs ${isSelected ? 'text-white' : 'text-gray-400'}`}>→</span>
+                                          </button>
+                                      );
+                                  })}
+                              </div>
+                         </div>
 
                         </div>
 
                         {/* --- SUMMARY & ACTIONS --- */}
-                        <div className="flex-none space-y-1.5 pt-2 border-t border-gray-200 bg-gray-50">
-                            <div className="bg-[#0d055a] text-white p-2 rounded-[1rem] shadow-lg">
-                              <div className="flex justify-between items-center mb-0.5">
-                                 <span className="text-white text-[8px] uppercase tracking-widest">Subtotal</span>
-                                 <span className="font-bold text-[12px]">₹{calculateTotal().toLocaleString()}</span>
+                        <div className="flex-none space-y-1.5 pt-1.5 border-t border-gray-200 bg-gray-50">
+                            <div className="bg-[#0d055a] text-white p-2 rounded-lg shadow-md">
+                              <div className="flex justify-between items-center mb-1">
+                                 <span className="text-white/80 text-[9px] uppercase font-bold tracking-widest">Subtotal</span>
+                                 <span className="font-bold text-xs">₹{calculateTotal().toLocaleString()}</span>
                               </div>
                               <div className="flex justify-between items-center mb-1">
-                                 <span className="text-white text-[8px] uppercase tracking-widest">Qty. Items</span>
-                                 <span className="font-bold text-[12px]">{cart.reduce((a, c) => a + c.qty, 0)}</span>
+                                 <span className="text-white/80 text-[9px] uppercase font-bold tracking-widest">Qty. Items</span>
+                                 <span className="font-bold text-xs">{cart.reduce((a, c) => a + c.qty, 0)}</span>
                               </div>
-                              <div className="border-t border-white/10 pt-2 flex justify-between items-center">
+                              <div className="border-t border-white/15 pt-1 flex justify-between items-center">
                                  <div className="flex flex-col">
-                                      <span className="text-white text-[7px] font-bold uppercase tracking-widest">Total Payable</span>
-                                     <span className="text-base font-black">₹{calculateTotal().toLocaleString()}</span>
+                                      <span className="text-white/80 text-[8px] font-bold uppercase tracking-widest">Total Payable</span>
+                                     <span className="text-sm font-black">₹{calculateTotal().toLocaleString()}</span>
                                  </div>
                               </div>
                           </div>
 
-                          <div className="space-y-1.5">
+                          <div className="space-y-1">
                                {!activeBillId.startsWith('edit_') && (
                                  <button
                                     onClick={handleGenerateBill}
                                     disabled={cart.length === 0}
-                                     className="w-full bg-[#0d055a] border-2 border-[#0d055a] text-white hover:bg-[#0d055a] hover:text-white font-black py-0 md:min-h-[64px] px-4 rounded-xl transition-all shadow-sm active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group text-xs"
-                                  >
-                                    <svg className="w-4 h-4 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                     className="w-full bg-[#eab308] border border-[#eab308] text-[#0d055a] hover:bg-[#d97706] hover:text-white font-black py-1.5 px-2.5 rounded-md transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed group text-xs h-8.5 uppercase tracking-wider"
+                                 >
+                                    <svg className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                     <span>GENERATE BILL</span>
                                  </button>
                                )}
@@ -4355,17 +4473,17 @@ const SellerPOSOrders = () => {
                                <button
                                   onClick={activeBillId.startsWith('edit_') ? handleUpdateOrder : handleAccessPayment}
                                   disabled={loading || cart.length === 0}
-                                    className={`w-full ${activeBillId.startsWith('edit_') ? 'bg-[#0d055a] hover:bg-[#0d055a]' : 'bg-[#0d055a] hover:bg-[#0d055a]'} text-white font-black py-3.5 px-4 rounded-xl shadow-lg shadow-[#0d055a]/30 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed text-xs`}
-                                >
+                                    className="w-full bg-[#0d055a] hover:bg-[#160a82] text-white font-extrabold py-1.5 px-2.5 rounded-md shadow-md transition-all active:scale-95 flex items-center justify-center gap-1 disabled:opacity-70 disabled:cursor-not-allowed text-xs h-8.5 uppercase tracking-wider"
+                               >
                                   {loading ? (
                                      <>
-                                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"/>
+                                         <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"/>
                                          <span>{activeBillId.startsWith('edit_') ? 'UPDATING...' : 'PROCESSING...'}</span>
                                      </>
                                   ) : (
                                      <>
-                                         <span className="tracking-widest">{activeBillId.startsWith('edit_') ? 'UPDATE ORDER' : 'COMPLETE TRANSACTION'}</span>
-                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d={activeBillId.startsWith('edit_') ? "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" : "M14 5l7 7m0 0l-7 7m7-7H3"}></path></svg>
+                                         <span>{activeBillId.startsWith('edit_') ? 'UPDATE ORDER' : 'COMPLETE TRANSACTION'}</span>
+                                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d={activeBillId.startsWith('edit_') ? "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" : "M14 5l7 7m0 0l-7 7m7-7H3"}></path></svg>
                                      </>
                                   )}
                                </button>

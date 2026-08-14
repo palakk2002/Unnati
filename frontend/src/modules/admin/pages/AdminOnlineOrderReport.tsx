@@ -118,16 +118,20 @@ const AdminOnlineOrderReport = () => {
   };
 
   const downloadExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(orders.map(item => ({
-      "Order Number": item.orderNumber,
-      "Date": new Date(item.orderDate).toLocaleDateString(),
-      "Customer Name": item.customerName,
-      "Phone": item.customerPhone,
-      "Amount": item.total,
-      "Payment Method": item.paymentMethod,
-      "Payment Status": item.paymentStatus,
-      "Order Status": item.status
-    })));
+    const worksheet = XLSX.utils.json_to_sheet(orders.map(item => {
+      const d = new Date(item.orderDate || item.createdAt || Date.now());
+      return {
+        "Order Number": item.orderNumber,
+        "Date": d.toLocaleDateString(),
+        "Time": d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }),
+        "Customer Name": item.customerName,
+        "Phone": item.customerPhone,
+        "Amount": item.total,
+        "Payment Method": item.paymentMethod,
+        "Payment Status": item.paymentStatus,
+        "Order Status": item.status
+      };
+    }));
 
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Online Order Report");
@@ -141,19 +145,22 @@ const AdminOnlineOrderReport = () => {
     doc.setFontSize(10);
     doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 22);
 
-    const tableData = orders.map(item => [
-      item.orderNumber,
-      new Date(item.orderDate).toLocaleDateString(),
-      item.customerName,
-      item.customerPhone,
-      `₹${item.total.toLocaleString()}`,
-      item.paymentMethod,
-      item.paymentStatus,
-      item.status
-    ]);
+    const tableData = orders.map(item => {
+      const d = new Date(item.orderDate || item.createdAt || Date.now());
+      return [
+        item.orderNumber,
+        `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}`,
+        item.customerName,
+        item.customerPhone,
+        `₹${item.total.toLocaleString()}`,
+        item.paymentMethod,
+        item.paymentStatus,
+        item.status
+      ];
+    });
 
     autoTable(doc, {
-      head: [['Order No', 'Date', 'Customer', 'Phone', 'Amount', 'Method', 'Payment', 'Status']],
+      head: [['Order No', 'Date & Time', 'Customer', 'Phone', 'Amount', 'Method', 'Payment', 'Status']],
       body: tableData,
       startY: 28,
       styles: { fontSize: 8 },
@@ -386,7 +393,7 @@ const AdminOnlineOrderReport = () => {
                     />
                   </th>
                   <th className="px-4 py-4 text-left text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Order No</th>
-                  <th className="px-4 py-4 text-left text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Date</th>
+                  <th className="px-4 py-4 text-left text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Date & Time</th>
                   <th className="px-4 py-4 text-left text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Customer</th>
                   <th className="px-4 py-4 text-left text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Amount</th>
                   <th className="px-4 py-4 text-left text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Payment</th>
@@ -422,7 +429,16 @@ const AdminOnlineOrderReport = () => {
                           #{item.orderNumber}
                         </Link>
                       </td>
-                      <td className="px-4 py-4 text-gray-500 font-bold text-xs">{new Date(item.orderDate).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                      <td className="px-4 py-4">
+                        <div className="flex flex-col">
+                          <span className="font-bold text-gray-900 leading-none mb-1 text-xs">
+                            {new Date(item.orderDate || item.createdAt || Date.now()).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
+                          </span>
+                          <span className="text-[10px] font-black text-indigo-500 font-mono tracking-tighter">
+                            {new Date(item.orderDate || item.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                          </span>
+                        </div>
+                      </td>
                       <td className="px-4 py-4">
                         {editMode ? (
                           <div className="flex flex-col gap-1 min-w-[150px]">

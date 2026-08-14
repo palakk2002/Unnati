@@ -249,14 +249,14 @@ export default function CheckoutAddress() {
           <div className="flex items-center">
             <button
               onClick={() => navigate(-1)}
-              className="flex items-center gap-1 md:gap-2 text-neutral-800 bg-white border border-neutral-200 hover:bg-neutral-50 shadow-sm transition-all px-2.5 py-1 md:px-3.5 md:py-1.5 rounded-lg md:rounded-xl mr-2"
+              className="flex items-center gap-1.5 md:gap-2 text-[#0c5236] bg-[#eef6f3] border border-[#0c5236] hover:bg-[#e2f0eb] shadow-sm transition-all px-4 py-2 md:px-5 md:py-2 rounded-lg md:rounded-xl mr-2 font-bold"
               aria-label="Go back"
             >
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-neutral-600">
-                <path d="M19 12H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 md:w-5 md:h-5 text-[#0c5236]">
+                <path d="M19 12H5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <span className="text-xs md:text-base font-semibold">Back</span>
+              <span className="text-sm md:text-lg font-bold tracking-wide">Back</span>
             </button>
             <h1 className="text-sm md:text-base font-bold text-neutral-900 md:hidden">Enter complete address</h1>
           </div>

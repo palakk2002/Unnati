@@ -480,8 +480,8 @@
 
 /* Billing & POS table headers */
 .premium-theme thead th,
-.premium-theme .border-b.border-gray-100 span,
-.premium-theme [class*="border-b"][class*="border-gray-"] span {
+.premium-theme .border-b.border-gray-100 span:not(.force-text-white),
+.premium-theme [class*="border-b"][class*="border-gray-"] span:not(.force-text-white) {
   font-weight: 600 !important;
   color: #6B7280 !important;
 }

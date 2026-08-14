@@ -597,6 +597,7 @@ export default function ProductCard({
                           value={localQty === 0 ? '' : localQty}
                           onChange={(e) => handleQuantityInputChange(e.target.value)}
                           onBlur={() => handleQuantityInputBlurOrSubmit(localQty)}
+                          onFocus={(e) => e.target.select()}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                               handleQuantityInputBlurOrSubmit(localQty);
@@ -604,10 +605,12 @@ export default function ProductCard({
                             }
                           }}
                           onClick={(e) => e.stopPropagation()}
+                          title="Click to type quantity manually (e.g. 50)"
                           className={`${
-                            compact ? 'w-8 text-xs' : 'w-12 text-sm'
-                          } h-full text-center font-bold bg-transparent text-neutral-800 border-none outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                            compact ? 'w-9 text-xs py-0.5' : 'w-12 text-sm py-1'
+                          } text-center font-black bg-transparent border-0 focus:bg-white focus:ring-2 focus:ring-[var(--customer-primary)] rounded-md text-neutral-900 outline-none transition-all cursor-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                         />
+
                         <button
                           type="button"
                           disabled={product.isAvailable === false}
@@ -791,6 +794,7 @@ export default function ProductCard({
                   value={localQty === 0 ? '' : localQty}
                   onChange={(e) => handleQuantityInputChange(e.target.value)}
                   onBlur={() => handleQuantityInputBlurOrSubmit(localQty)}
+                  onFocus={(e) => e.target.select()}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       handleQuantityInputBlurOrSubmit(localQty);
@@ -798,10 +802,12 @@ export default function ProductCard({
                     }
                   }}
                   onClick={(e) => e.stopPropagation()}
+                  title="Click to type quantity manually (e.g. 50)"
                   className={`${
-                    compact ? 'w-8 text-xs' : 'w-14 text-sm'
-                  } h-full text-center font-bold bg-transparent text-neutral-800 border-none outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                    compact ? 'w-9 text-xs py-0.5' : 'w-12 text-sm py-1'
+                  } text-center font-black bg-transparent border-0 focus:bg-white focus:ring-2 focus:ring-[var(--customer-primary)] rounded-md text-neutral-900 outline-none transition-all cursor-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                 />
+
                 <button
                   type="button"
                   disabled={product.isAvailable === false}
