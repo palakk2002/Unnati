@@ -5,6 +5,7 @@ const DEFAULT_CATEGORIES = [
         name: 'Wedding',
         iconLibrary: 'Custom', // Using 'Custom' to indicate it maps to internal SVGs
         iconName: 'wedding',
+        image: '/women.jpg',
         slug: 'wedding',
         status: 'Published',
         order: 1
@@ -13,6 +14,7 @@ const DEFAULT_CATEGORIES = [
         name: 'Winter',
         iconLibrary: 'Custom',
         iconName: 'winter',
+        image: '/cold.jpg',
         slug: 'winter',
         status: 'Published',
         order: 2
@@ -29,6 +31,7 @@ const DEFAULT_CATEGORIES = [
         name: 'Beauty',
         iconLibrary: 'Custom',
         iconName: 'beauty',
+        image: '/personal.jpg',
         slug: 'beauty',
         status: 'Published',
         order: 4
@@ -37,6 +40,7 @@ const DEFAULT_CATEGORIES = [
         name: 'Grocery',
         iconLibrary: 'Custom',
         iconName: 'grocery',
+        image: '/dairy.jpg',
         slug: 'grocery',
         status: 'Published',
         order: 5
@@ -45,9 +49,19 @@ const DEFAULT_CATEGORIES = [
         name: 'Fashion',
         iconLibrary: 'Custom',
         iconName: 'fashion',
+        image: '/shirt1.jpg',
         slug: 'fashion',
         status: 'Published',
         order: 6
+    },
+    {
+        name: 'Household',
+        iconLibrary: 'Custom',
+        iconName: 'bucket',
+        image: '/bucket.jpg',
+        slug: 'household',
+        status: 'Published',
+        order: 7
     },
     {
         name: 'Sports',
@@ -55,7 +69,7 @@ const DEFAULT_CATEGORIES = [
         iconName: 'sports',
         slug: 'sports',
         status: 'Published',
-        order: 7
+        order: 8
     }
 ];
 

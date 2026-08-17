@@ -24,9 +24,11 @@ export default function AdminLogin() {
       await sendOTP(mobileNumber);
       setShowOTP(true);
     } catch (err: any) {
-      setError(
-        err.response?.data?.message || "Failed to send OTP. Please try again."
-      );
+      const errorMsg = err.response?.data?.message ||
+        (err.code === 'ECONNABORTED' || err.message?.includes('Network Error')
+          ? "Server is waking up or connection timed out. Please try again."
+          : "Failed to send OTP. Please try again.");
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

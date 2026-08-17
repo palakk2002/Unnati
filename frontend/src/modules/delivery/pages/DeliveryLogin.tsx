@@ -34,12 +34,15 @@ export default function DeliveryLogin() {
       }
     } catch (err: any) {
       const status = err.response?.status;
-      const message = err.response?.data?.message || 'Failed to send OTP. Please try again.';
+      const message = err.response?.data?.message ||
+        (err.code === 'ECONNABORTED' || err.message?.includes('Network Error')
+          ? 'Server is waking up or connection timed out. Please try again.'
+          : 'Failed to send OTP. Please try again.');
 
       setError(message);
 
-      // Check for 400 Bad Request specific to user not found (or based on message content)
-      if (status === 400 && (message.toLowerCase().includes('not found') || message.toLowerCase().includes('register'))) {
+      // Check for Bad Request / Not Found specific to user not found
+      if ((status === 400 || status === 404) && (message.toLowerCase().includes('not found') || message.toLowerCase().includes('register'))) {
         setIsNotRegistered(true);
       }
     } finally {

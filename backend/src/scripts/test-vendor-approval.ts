@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import connectDB from '../config/db';
 import Seller from '../models/Seller';
 import Admin from '../models/Admin';
+import Otp from '../models/Otp';
 import { sendOTP as sendOTPService, verifyOTP as verifyOTPService } from '../services/otpService';
 import { generateToken } from '../services/jwtService';
 
@@ -98,7 +99,7 @@ async function getAdminToken(): Promise<string | null> {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Get OTP from database
-    const otpRecord = await (await import('../models/Otp')).default.findOne({
+    const otpRecord = await Otp.findOne({
       mobile: adminMobile,
       userType: 'Admin',
       isVerified: false,

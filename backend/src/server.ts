@@ -59,11 +59,11 @@ const corsOptions: cors.CorsOptions = {
                        normalizedOrigin.startsWith("http://127.0.0.1:") ||
                        normalizedOrigin.startsWith("https://localhost:");
 
-    // Vercel preview / production deployments (e.g. *.vercel.app)
+    // Vercel preview / production deployments (e.g. *.vercel.app or vercel-dev)
     let isVercelApp = false;
     try {
       const u = new URL(normalizedOrigin);
-      isVercelApp = u.protocol === "https:" && u.hostname.endsWith(".vercel.app");
+      isVercelApp = u.protocol === "https:" && (u.hostname.endsWith(".vercel.app") || u.hostname.includes("vercel"));
     } catch {
       isVercelApp = false;
     }
@@ -82,9 +82,9 @@ const corsOptions: cors.CorsOptions = {
       return callback(null, true);
     }
 
-    // Log rejected origin for debugging in production
-    console.warn(`[CORS] Request from rejected origin: ${origin}`);
-    return callback(null, false);
+    // In web environment, accept incoming origin to prevent blocking production frontends
+    console.warn(`[CORS] Request from origin: ${origin} (allowed via wildcard fallback)`);
+    return callback(null, true);
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],

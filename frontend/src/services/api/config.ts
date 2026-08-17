@@ -21,6 +21,9 @@ const withApiVersionPath = (value: string): string => {
 const unique = (items: string[]): string[] => [...new Set(items.filter(Boolean))];
 
 const buildApiBaseCandidates = (): string[] => {
+  const customBase = typeof window !== "undefined" ? localStorage.getItem("CUSTOM_API_BASE_URL") : "";
+  const fromCustom = customBase ? withApiVersionPath(customBase) : "";
+
   const fromEnvBase = import.meta.env.VITE_API_BASE_URL
     ? withApiVersionPath(import.meta.env.VITE_API_BASE_URL)
     : "";
@@ -29,7 +32,7 @@ const buildApiBaseCandidates = (): string[] => {
     : "";
 
   if (import.meta.env.DEV) {
-    return unique([fromEnvBase, fromEnvRoot, "/api/v1"]);
+    return unique([fromCustom, fromEnvBase, fromEnvRoot, "/api/v1"]);
   }
 
   const originCandidate =
@@ -38,12 +41,10 @@ const buildApiBaseCandidates = (): string[] => {
       : "";
 
   return unique([
+    fromCustom,
     fromEnvBase,
     fromEnvRoot,
     originCandidate,
-    "https://api.Ecommerce.today/api/v1",
-    "https://www.Ecommerce.today/api/v1",
-    "https://Ecommerce.today/api/v1",
     "/api/v1",
   ]);
 };
@@ -91,12 +92,13 @@ export const getSocketBaseURL = (): string => {
   const apiBaseUrl = getApiBaseURL();
   const socketUrl = apiBaseUrl.replace(/\/api\/v\d+$|\/api$/, '');
 
-  return normalizeBaseUrl(socketUrl || "https://api.Ecommerce.today");
+  return normalizeBaseUrl(socketUrl || window.location.origin);
 };
 
 // Create axios instance
 const api: AxiosInstance = axios.create({
   baseURL: activeApiBaseUrl,
+  timeout: 20000, // 20 seconds timeout to prevent hanging UI indefinitely
   headers: {
     "Content-Type": "application/json",
   },

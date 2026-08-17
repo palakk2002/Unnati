@@ -31,7 +31,11 @@ export default function Login() {
       }
       setShowOTP(true);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to initiate call. Please try again.');
+      const errorMsg = err.response?.data?.message ||
+        (err.code === 'ECONNABORTED' || err.message?.includes('Network Error')
+          ? 'Server is waking up or connection timed out. Please try again.'
+          : 'Failed to send OTP. Please try again.');
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken, TokenPayload } from '../services/jwtService';
+import Seller from '../models/Seller';
 
 export type AuthUserType = 'Admin' | 'Seller' | 'Customer' | 'Delivery';
 
@@ -112,8 +113,6 @@ export const checkEnabled = async (req: Request, res: Response, next: NextFuncti
   // Only apply to Sellers
   if (req.user.userType === 'Seller') {
     try {
-      // Import Seller model dynamically to avoid circular dependencies if any
-      const Seller = (await import('../models/Seller')).default;
       const seller = await Seller.findById(req.user.userId);
 
       if (seller && !seller.isEnabled) {

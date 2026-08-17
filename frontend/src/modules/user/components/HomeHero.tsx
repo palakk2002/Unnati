@@ -30,18 +30,26 @@ interface Tab {
 
 const DUMMY_IMAGES: Record<string, string> = {
   all: 'https://cdn-icons-png.flaticon.com/512/3603/3603123.png',
-  electronics: 'https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTExL3BmLXMxMDgtcG00MTEzLWNoaW1wLXBuZ18xLnBuZw.png',
-  clothing: 'https://png.pngtree.com/png-vector/20240131/ourmid/pngtree-green-varsity-jacket-png-image_11582236.png',
-  fashion: 'https://png.pngtree.com/png-vector/20240131/ourmid/pngtree-green-varsity-jacket-png-image_11582236.png',
+  electronics: '/electronics.jpg',
+  clothing: '/shirt1.jpg',
+  fashion: '/shirt1.jpg',
+  women: '/women.jpg',
   books: 'https://png.pngtree.com/png-vector/20240309/ourmid/pngtree-books-isolated-on-white-background-stack-of-colorful-books-png-image_11920803.png',
-  food: 'https://png.pngtree.com/png-clipart/20230417/original/pngtree-fast-food-burger-set-png-image_9061640.png',
-  grocery: 'https://png.pngtree.com/png-clipart/20230417/original/pngtree-fast-food-burger-set-png-image_9061640.png',
-  home: 'https://png.pngtree.com/png-vector/20231215/ourmid/pngtree-beige-armchair-furniture-couch-isolated-white-background-png-image_11307221.png',
-  furniture: 'https://png.pngtree.com/png-vector/20231215/ourmid/pngtree-beige-armchair-furniture-couch-isolated-white-background-png-image_11307221.png',
-  sports: 'https://png.pngtree.com/png-vector/20230906/ourmid/pngtree-sports-balls-isolated-on-white-background-3d-illustration-png-image_10006232.png',
-  fitness: 'https://png.pngtree.com/png-vector/20230906/ourmid/pngtree-sports-balls-isolated-on-white-background-3d-illustration-png-image_10006232.png',
-  beauty: 'https://png.pngtree.com/png-vector/20230913/ourmid/pngtree-cosmetics-makeup-products-isolated-on-white-background-png-image_10078712.png',
-  fallback: 'https://cdn-icons-png.flaticon.com/512/3081/3081559.png'
+  food: '/dairy.jpg',
+  grocery: '/dairy.jpg',
+  dairy: '/dairy.jpg',
+  cold: '/cold.jpg',
+  beverage: '/cold.jpg',
+  winter: '/cold.jpg',
+  home: '/bucket.jpg',
+  household: '/bucket.jpg',
+  cleaning: '/bucket.jpg',
+  bucket: '/bucket.jpg',
+  sports: '/sports.jpg',
+  fitness: '/sports.jpg',
+  beauty: '/personal.jpg',
+  personal: '/personal.jpg',
+  fallback: '/dairy.jpg'
 };
 
 const ALL_TAB: Tab = {
@@ -52,20 +60,37 @@ const ALL_TAB: Tab = {
   ),
 };
 
+const DEFAULT_HEADER_TABS: Tab[] = [
+  ALL_TAB,
+  { id: 'grocery', label: 'Grocery', icon: <img src="/dairy.jpg" alt="Grocery" className="w-full h-full object-contain rounded-md" /> },
+  { id: 'winter', label: 'Winter', icon: <img src="/cold.jpg" alt="Winter" className="w-full h-full object-contain rounded-md" /> },
+  { id: 'fashion', label: 'Fashion', icon: <img src="/shirt1.jpg" alt="Fashion" className="w-full h-full object-contain rounded-md" /> },
+  { id: 'women', label: 'Women', icon: <img src="/women.jpg" alt="Women" className="w-full h-full object-contain rounded-md" /> },
+  { id: 'beauty', label: 'Beauty', icon: <img src="/personal.jpg" alt="Beauty" className="w-full h-full object-contain rounded-md" /> },
+  { id: 'household', label: 'Household', icon: <img src="/bucket.jpg" alt="Household" className="w-full h-full object-contain rounded-md" /> },
+  { id: 'electronics', label: 'Electronics', icon: <img src="/electronics.jpg" alt="Electronics" className="w-full h-full object-contain rounded-md" /> },
+  { id: 'sports', label: 'Sports', icon: <img src="/sports.jpg" alt="Sports" className="w-full h-full object-contain rounded-md" /> }
+];
+
 const getCategoryTabIcon = (c: any) => {
-  if (c.image) {
-    return <img src={c.image} alt={c.name} className="w-full h-full object-contain" />;
-  }
   const slug = (c.slug || c.id || c.name || '').toLowerCase();
   if (slug.includes('all')) return <img src={DUMMY_IMAGES.all} alt={c.name} className="w-full h-full object-contain rounded-md" />;
-  if (slug.includes('electron')) return <img src={DUMMY_IMAGES.electronics} alt={c.name} className="w-full h-full object-contain rounded-md" />;
-  if (slug.includes('cloth') || slug.includes('fashion')) return <img src={DUMMY_IMAGES.clothing} alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('women') || slug.includes('lady') || slug.includes('ladies') || slug.includes('female') || slug.includes('wedding')) return <img src="/women.jpg" alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('shirt') || slug.includes('cloth') || slug.includes('fashion') || slug.includes('men')) return <img src="/shirt1.jpg" alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('cold') || slug.includes('bev') || slug.includes('drink') || slug.includes('winter')) return <img src="/cold.jpg" alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('dairy') || slug.includes('grocer') || slug.includes('food') || slug.includes('milk') || slug.includes('egg')) return <img src="/dairy.jpg" alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('person') || slug.includes('beaut') || slug.includes('hygiene') || slug.includes('care')) return <img src="/personal.jpg" alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('bucket') || slug.includes('home') || slug.includes('clean') || slug.includes('house')) return <img src="/bucket.jpg" alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('electron') || slug.includes('gadget') || slug.includes('tech')) return <img src="/electronics.jpg" alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('sport') || slug.includes('fit') || slug.includes('gym')) return <img src="/sports.jpg" alt={c.name} className="w-full h-full object-contain rounded-md" />;
+
+  // If explicit custom image exists and doesn't match above categories, use it
+  if (c.image) {
+    return <img src={c.image} alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  }
+
   if (slug.includes('book')) return <img src={DUMMY_IMAGES.books} alt={c.name} className="w-full h-full object-contain rounded-md" />;
-  if (slug.includes('food') || slug.includes('bev') || slug.includes('grocer')) return <img src={DUMMY_IMAGES.grocery} alt={c.name} className="w-full h-full object-contain rounded-md" />;
-  if (slug.includes('home') || slug.includes('furnit')) return <img src={DUMMY_IMAGES.home} alt={c.name} className="w-full h-full object-contain rounded-md" />;
-  if (slug.includes('sport') || slug.includes('fit')) return <img src={DUMMY_IMAGES.sports} alt={c.name} className="w-full h-full object-contain rounded-md" />;
-  if (slug.includes('beaut')) return <img src={DUMMY_IMAGES.beauty} alt={c.name} className="w-full h-full object-contain rounded-md" />;
-  return <img src={DUMMY_IMAGES.fallback} alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  return <img src="/dairy.jpg" alt={c.name} className="w-full h-full object-contain rounded-md" />;
 };
 
 interface LanguageDropdownProps {
@@ -174,7 +199,7 @@ export default function HomeHero({ activeTab = 'all', onTabChange }: HomeHeroPro
   const [headerCategories, setHeaderCategories] = useState<any[]>(cachedHeaderCategories);
   const [tabs, setTabs] = useState<Tab[]>(() => {
     if (!cachedHeaderCategories.length) {
-      return [ALL_TAB];
+      return DEFAULT_HEADER_TABS;
     }
 
     const mapped = cachedHeaderCategories.map((c) => ({
@@ -225,9 +250,7 @@ export default function HomeHero({ activeTab = 'all', onTabChange }: HomeHeroPro
         console.error('Failed to fetch header categories', error);
       }
     };
-    if (!cachedHeaderCategories.length) {
-      fetchHeaderCategories();
-    }
+    fetchHeaderCategories();
   }, []);
 
   const { themeKey: currentThemeKey } = useThemeContext();
@@ -566,20 +589,20 @@ export default function HomeHero({ activeTab = 'all', onTabChange }: HomeHeroPro
                   key={tab.id}
                   ref={(el) => { if (el) tabRefs.current.set(tab.id, el); else tabRefs.current.delete(tab.id); }}
                   onClick={() => handleTabClick(tab.id)}
-                  className={`flex-shrink-0 flex flex-col items-center justify-between w-[74px] h-[82px] md:w-[84px] md:h-[90px] p-1.5 md:p-2 rounded-xl transition-all duration-200 group border cursor-pointer ${
+                  className={`flex-shrink-0 flex flex-col items-center justify-between w-[84px] h-[92px] md:w-[96px] md:h-[104px] p-1.5 md:p-2 rounded-xl transition-all duration-200 group border cursor-pointer ${
                     isActive
                       ? 'border-[#34d399] bg-[#e6f7f2] shadow-sm'
                       : 'border-neutral-200 bg-white hover:border-neutral-300 shadow-[0_1px_2px_rgba(0,0,0,0.03)]'
                   }`}
                   type="button"
                 >
-                  <div className="w-full flex-1 flex items-center justify-center overflow-hidden p-0.5">
-                    <div className="w-9 h-9 md:w-[46px] md:h-[46px] flex items-center justify-center flex-shrink-0 [&>svg]:w-full [&>svg]:h-full [&>img]:w-full [&>img]:h-full [&>img]:object-contain transition-transform duration-200 group-hover:scale-105">
+                  <div className="w-full flex-1 flex items-center justify-center overflow-hidden p-0">
+                    <div className="w-[54px] h-[54px] md:w-[68px] md:h-[68px] flex items-center justify-center flex-shrink-0 [&>svg]:w-full [&>svg]:h-full [&>img]:w-full [&>img]:h-full [&>img]:object-contain transition-transform duration-200 group-hover:scale-105">
                       {tab.icon}
                     </div>
                   </div>
                   <span
-                    className={`text-[10px] md:text-[11.5px] leading-tight text-center font-sans truncate w-full px-0.5 ${
+                    className={`text-[11px] md:text-[12.5px] leading-tight text-center font-sans truncate w-full px-0.5 ${
                       isActive ? 'font-bold text-[#059669]' : 'font-medium text-neutral-600 group-hover:text-neutral-900'
                     }`}
                   >

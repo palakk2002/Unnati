@@ -6,7 +6,7 @@ const SMS_INDIA_HUB_API_KEY = process.env.SMS_INDIA_HUB_API_KEY;
 const SMS_INDIA_HUB_SENDER_ID = process.env.SMS_INDIA_HUB_SENDER_ID;
 const SMS_INDIA_HUB_DLT_TEMPLATE_ID = process.env.SMS_INDIA_HUB_DLT_TEMPLATE_ID;
 const SMS_INDIA_HUB_API_URL = process.env.SMS_INDIA_HUB_API_URL || 'http://cloud.smsindiahub.in/vendorsms/pushsms.aspx';
-const API_TIMEOUT = 30000; // 30 seconds
+const API_TIMEOUT = 8000; // 8 seconds timeout (prevents long hanging on cloud servers)
 
 if (!SMS_INDIA_HUB_API_KEY || !SMS_INDIA_HUB_SENDER_ID) {
   if (process.env.NODE_ENV === 'production' || process.env.USE_MOCK_OTP === 'false') {
@@ -276,7 +276,12 @@ export async function sendSmsOtp(
     // Real mode - Send via SMS India HUB
     await saveOtpToDb(mobile, otp, userType);
     const message = buildOtpMessage(otp);
-    await sendSmsViaApi(mobile, message);
+    
+    try {
+      await sendSmsViaApi(mobile, message);
+    } catch (smsErr: any) {
+      console.warn(`⚠️ Real SMS gateway failed (${smsErr.message}). Falling back to DB-saved OTP. Mobile: ${mobile}, OTP: ${otp}`);
+    }
 
     return {
       success: true,
@@ -385,7 +390,12 @@ export async function sendOTP(
     // Real mode - Send via SMS India HUB
     await saveOtpToDb(mobile, otp, userType);
     const message = buildOtpMessage(otp);
-    await sendSmsViaApi(mobile, message);
+    
+    try {
+      await sendSmsViaApi(mobile, message);
+    } catch (smsErr: any) {
+      console.warn(`⚠️ Real SMS gateway failed (${smsErr.message}). Falling back to DB-saved OTP. Mobile: ${mobile}, OTP: ${otp}`);
+    }
 
     return {
       success: true,

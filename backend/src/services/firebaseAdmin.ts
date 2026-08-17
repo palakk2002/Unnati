@@ -58,7 +58,7 @@ try {
   console.error('Firebase Admin Initialization Error:', error);
 }
 
-export const sendPushNotification = async (tokens: string[], payload: any) => {
+export const sendPushNotification = async (tokens: string[], payload: any): Promise<any> => {
   try {
     if (!tokens || tokens.length === 0) return;
 

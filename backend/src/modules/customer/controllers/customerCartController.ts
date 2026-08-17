@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Cart from '../../../models/Cart';
 import CartItem from '../../../models/CartItem';
 import Product from '../../../models/Product';
+import Seller from '../../../models/Seller';
 import AppSettings from '../../../models/AppSettings';
 import { findSellersWithinRange } from '../../../utils/locationHelper';
 import mongoose from 'mongoose';
@@ -20,9 +21,8 @@ const calculateCartTotal = async (cartId: any, nearbySellerIds: mongoose.Types.O
 
     let visibleSellerIds: string[] = [];
     try {
-        const Seller = (await import("../../../models/Seller")).default;
         const visibleSellers = await Seller.find({ isEnabled: true }).select("_id");
-        visibleSellerIds = visibleSellers.map(s => s._id.toString());
+        visibleSellerIds = visibleSellers.map((s: any) => s._id.toString());
     } catch (e) { console.error("Error fetching visible sellers", e); }
 
     const settings = await AppSettings.findOne().lean();
@@ -70,9 +70,8 @@ export const getCart = async (req: Request, res: Response) => {
 
         let visibleSellerIds: string[] = [];
         try {
-            const Seller = (await import("../../../models/Seller")).default;
             const visibleSellers = await Seller.find({ isEnabled: true }).select("_id");
-            visibleSellerIds = visibleSellers.map(s => s._id.toString());
+            visibleSellerIds = visibleSellers.map((s: any) => s._id.toString());
         } catch (e) { }
 
         const settings = await AppSettings.findOne().lean();
@@ -231,9 +230,8 @@ export const addToCart = async (req: Request, res: Response) => {
 
         let visibleSellerIds: string[] = [];
         try {
-            const Seller = (await import("../../../models/Seller")).default;
             const visibleSellers = await Seller.find({ isEnabled: true }).select("_id");
-            visibleSellerIds = visibleSellers.map(s => s._id.toString());
+            visibleSellerIds = visibleSellers.map((s: any) => s._id.toString());
         } catch (e) { }
 
         const filteredItems = (updatedCart?.items as any[] || [])
@@ -312,9 +310,8 @@ export const updateCartItem = async (req: Request, res: Response) => {
 
         let visibleSellerIds: string[] = [];
         try {
-            const Seller = (await import("../../../models/Seller")).default;
             const visibleSellers = await Seller.find({ isEnabled: true }).select("_id");
-            visibleSellerIds = visibleSellers.map(s => s._id.toString());
+            visibleSellerIds = visibleSellers.map((s: any) => s._id.toString());
         } catch (e) { }
 
         const filteredItems = (updatedCart?.items as any[] || [])
