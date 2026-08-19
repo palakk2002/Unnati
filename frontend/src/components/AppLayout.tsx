@@ -726,12 +726,16 @@ export default function AppLayout({ children }: AppLayoutProps) {
                     Categories
                   </Link>
 
-                  {/* Profile */}
+                  {/* Profile Icon */}
                   <Link
                     to="/account"
-                    className={`px-2.5 py-1.5 rounded text-[13px] transition-all font-normal text-white hover:text-[#F2B134] hover:outline hover:outline-1 hover:outline-white/30 ${isActive('/account') ? 'text-[#F2B134] font-medium border-b border-[#F2B134] rounded-none' : ''}`}
+                    className={`px-2.5 py-1 flex items-center justify-center rounded transition-all font-normal text-white hover:text-[#F2B134] hover:outline hover:outline-1 hover:outline-white/30 ${isActive('/account') ? 'text-[#F2B134] font-medium border-b border-[#F2B134] rounded-none' : ''}`}
+                    title="Profile"
                   >
-                    Login
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
                   </Link>
                 </div>
 

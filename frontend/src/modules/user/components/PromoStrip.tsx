@@ -646,71 +646,25 @@ export default function PromoStrip({ activeTab = "all" }: PromoStripProps) {
         paddingBottom: "0px",
         marginTop: "8px",
       }}>
-      {/* Scrolling Marquee Banner */}
-      <div ref={housefullRef} className="w-full relative z-10 mb-2" data-section="promo-marquee">
-        {/* Scrolling Marquee Container */}
-        <div className="w-full overflow-hidden whitespace-nowrap py-0.5 md:py-1 bg-neutral-950 border-y border-white/5 relative flex items-center shadow-lg">
-          {/* Injecting marquee animation CSS */}
-          <style dangerouslySetInnerHTML={{__html: `
-            @keyframes marquee {
-              0% { transform: translateX(-33.33%); }
-              100% { transform: translateX(0); }
-            }
-            .marquee-content {
-              display: flex;
-              gap: 3rem;
-              animation: marquee 25s linear infinite;
-              width: max-content;
-            }
-            .marquee-content:hover {
-              animation-play-state: paused;
-            }
-          `}} />
-          <div className="marquee-content select-none">
-            {/* Repeat the text 6 times to ensure it covers the screen and loops seamlessly */}
-            {[...Array(6)].map((_, index) => (
-              <div key={index} className="flex items-center gap-2 text-[11px] md:text-sm font-sans font-bold tracking-widest text-white">
-                <span className="text-yellow-300 animate-pulse text-[9px] md:text-xs">⚡</span>
-                <span className="uppercase">{headingText}</span>
-                <span ref={index === 0 ? saleRef : undefined} className="text-yellow-300 uppercase">{saleTextValue}</span>
-                <span className="text-yellow-300 animate-pulse text-[9px] md:text-xs">⚡</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Dates */}
-        {dateRange && (
-          <div
-            ref={dateRef}
-            className="font-bold text-[10px] md:text-xs text-center mt-1.5 font-sans tracking-wide"
-            style={{ color: '#ffffff', opacity: 0.9 }}>
-            {dateRange}
-          </div>
-        )}
-      </div>
-
       {/* Main Content: Crazy Deals + Category Cards */}
       <div className="px-4 mt-3 md:mt-4">
         <div ref={containerRef} className="flex gap-2">
           {/* Crazy Deals Section - Left */}
-          <div className="flex-shrink-0 w-[100px] promo-card">
+          <div className="flex-shrink-0 w-[100px] promo-card transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
             <div
-              className="h-full rounded-md p-1 flex flex-col items-center justify-between relative overflow-hidden"
+              className="h-full rounded-md p-1.5 flex flex-col items-center justify-between relative overflow-hidden border border-white/10 shadow-md"
               style={{
-                backgroundColor: "#1f2937",
+                background: "linear-gradient(135deg, #111827 0%, #1f2937 50%, #374151 100%)",
                 minHeight: "122px",
               }}>
-              {/* CRAZY DEALS - Two lines, bigger */}
-              <div className="text-center mb-1.5" style={{ marginTop: "6px" }}>
+              {/* CRAZY DEALS - Two lines, bigger, premium gold text */}
+              <div className="text-center mb-1" style={{ marginTop: "4px" }}>
                 <div
-                  className="text-white font-black leading-tight"
+                  className="font-extrabold leading-tight tracking-wider uppercase bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-100 bg-clip-text text-transparent"
                   style={{
-                    fontSize: "16px",
-                    fontFamily: "sans-serif",
-                    textShadow:
-                      "2px 2px 4px rgba(0, 0, 0, 0.8), 1px 1px 2px rgba(0, 0, 0, 0.9)",
-                    letterSpacing: "0.5px",
+                    fontSize: "14px",
+                    fontFamily: "'Outfit', 'Inter', sans-serif",
+                    textShadow: "0 2px 4px rgba(0,0,0,0.3)",
                   }}>
                   {crazyDealsTitle.split(" ").map((word, idx) => (
                     <div key={idx}>{word}</div>
@@ -721,40 +675,40 @@ export default function PromoStrip({ activeTab = "all" }: PromoStripProps) {
               {/* Price Banners - Compact */}
               <div
                 ref={priceContainerRef}
-                className="flex flex-col items-center mb-0.5 relative">
+                className="flex flex-col items-center mb-1 relative">
                 {/* Original Price - Darker Gray, Smaller Banner */}
                 <div
-                  className="bg-neutral-600 rounded-sm px-1.5 inline-block relative z-10"
+                  className="bg-neutral-800/80 rounded-sm px-1.5 inline-block relative z-10 border border-neutral-700/50"
                   style={{
                     height: "fit-content",
                     lineHeight: "1",
                     paddingTop: "2px",
                     paddingBottom: "2px",
                   }}>
-                  <span className="text-white text-[10px] font-medium line-through leading-none">
+                  <span className="text-neutral-400 text-[9px] font-medium line-through leading-none">
                     ₹{safeOriginalPrice}
                   </span>
                 </div>
-                {/* Discounted Price - Bright Green Banner */}
+                {/* Discounted Price - Premium Crimson/Red Gradient Banner */}
                 <div
-                  className="bg-[var(--customer-primary)] rounded-sm px-2 inline-block relative -mt-0.5 z-20"
+                  className="bg-gradient-to-r from-red-500 to-rose-600 rounded-sm px-2 inline-block relative -mt-0.5 z-20 shadow-sm"
                   style={{
                     height: "fit-content",
                     lineHeight: "1",
                     paddingTop: "2.5px",
                     paddingBottom: "2.5px",
                   }}>
-                  <span className="text-white text-[11px] font-bold leading-none">
+                  <span className="text-white text-[11px] font-extrabold leading-none tracking-wide">
                     ₹{safeDiscountedPrice}
                   </span>
                 </div>
               </div>
 
-              {/* Product Name - Compact - Clickable */}
+              {/* Product Name - Compact - Clickable - White/Gray for dark background */}
               <div
                 ref={productNameRef}
                 onClick={handleProductClick}
-                className="text-neutral-900 font-medium text-[11px] text-center mb-0.5 cursor-pointer hover:underline line-clamp-2"
+                className="text-gray-200 font-medium text-[10px] text-center mb-1 cursor-pointer hover:text-white hover:underline line-clamp-1 w-full px-0.5 transition-colors"
                 title={displayProduct.productName || displayProduct.name}>
                 {displayProduct.productName || displayProduct.name}
               </div>
@@ -766,13 +720,13 @@ export default function PromoStrip({ activeTab = "all" }: PromoStripProps) {
                 style={{ minHeight: "55px", maxHeight: "75px" }}>
                 <div
                   onClick={handleProductClick}
-                  className="w-16 h-20 rounded-sm flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+                  className="w-16 h-18 rounded bg-white/5 flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity border border-white/5"
                   style={{ background: "transparent" }}>
                   {displayProduct.imageUrl ? (
                     <img
                       src={displayProduct.imageUrl}
                       alt={displayProduct.name}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain filter drop-shadow-sm transition-transform duration-300 hover:scale-105"
                       loading="lazy"
                       decoding="async"
                       style={{
@@ -787,7 +741,7 @@ export default function PromoStrip({ activeTab = "all" }: PromoStripProps) {
                         const parent = target.parentElement;
                         if (parent && !parent.querySelector('.product-fallback')) {
                           const fallback = document.createElement('div');
-                          fallback.className = 'product-fallback w-full h-full bg-gradient-to-b from-yellow-100 to-yellow-50 flex items-center justify-center';
+                          fallback.className = 'product-fallback w-full h-full bg-gradient-to-b from-yellow-100 to-yellow-50 flex items-center justify-center rounded';
                           const icon = document.createElement('div');
                           icon.className = 'w-7 h-9 bg-yellow-200 rounded-sm relative';
                           icon.innerHTML = `
@@ -800,7 +754,7 @@ export default function PromoStrip({ activeTab = "all" }: PromoStripProps) {
                       }}
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-b from-yellow-100 to-yellow-50 flex items-center justify-center">
+                    <div className="w-full h-full bg-gradient-to-b from-yellow-100 to-yellow-50 flex items-center justify-center rounded">
                       <div className="w-7 h-9 bg-yellow-200 rounded-sm relative">
                         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-2.5 h-2.5 bg-blue-400 rounded-full"></div>
                         <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-white/80"></div>
@@ -830,16 +784,16 @@ export default function PromoStrip({ activeTab = "all" }: PromoStripProps) {
                 <div key={card.id} className="promo-card">
                   <Link
                     to={card.slug || card.categoryId ? `/category/${card.slug || card.categoryId}` : "#"}
-                    className="group rounded-md transition-all duration-300 hover:shadow-md active:scale-[0.98] h-full flex flex-col overflow-hidden relative border border-[var(--customer-primary-alpha-30)]"
+                    className="group rounded-md transition-all duration-300 hover:shadow-md hover:border-[var(--customer-primary-dark)] hover:-translate-y-0.5 active:scale-[0.98] h-full flex flex-col overflow-hidden relative border border-[var(--customer-primary-alpha-20)]"
                     style={{
                       minHeight: "122px",
-                      background: "var(--customer-primary-alpha-10)",
+                      background: "linear-gradient(135deg, #ffffff 0%, var(--customer-primary-alpha-10) 100%)",
                     }}>
-                    {/* Green Discount Banner - Only around text, centered at top */}
+                    {/* Gradient Discount Banner - Premium styled pill centered at top */}
                     <div
                       className="w-full flex justify-center"
                       style={{ paddingTop: "0", paddingBottom: "2px" }}>
-                      <div className="bg-[var(--customer-primary-dark)] text-white text-[13px] font-extrabold px-2.5 py-0.5 rounded-sm tracking-wider text-center inline-block uppercase">
+                      <div className="bg-gradient-to-r from-[var(--customer-primary-dark)] to-[var(--customer-primary)] text-white text-[11px] font-extrabold px-3 py-0.5 rounded-b-md tracking-wider text-center inline-block uppercase shadow-sm">
                         {card.badge}
                       </div>
                     </div>
@@ -847,13 +801,13 @@ export default function PromoStrip({ activeTab = "all" }: PromoStripProps) {
                     <div
                       className="px-1.5 pb-1.5 flex flex-col flex-1 justify-between"
                       style={{ paddingTop: "2px" }}>
-                      {/* Category Title */}
+                      {/* Category Title - with hover color transition */}
                       <div
-                        className="text-neutral-900 font-sans font-black text-center uppercase tracking-wide"
+                        className="text-neutral-800 font-sans font-extrabold text-center uppercase tracking-wide group-hover:text-[var(--customer-primary-dark)] transition-colors"
                         style={{
-                          fontSize: "15px",
+                          fontSize: "13px",
                           lineHeight: "1.2",
-                          marginBottom: "6px",
+                          marginBottom: "4px",
                         }}>
                         {card.title}
                       </div>
@@ -867,12 +821,12 @@ export default function PromoStrip({ activeTab = "all" }: PromoStripProps) {
                             subcategoryImages.slice(0, 4).map((imageUrl, idx) => (
                                 <div
                                   key={idx}
-                                  className="flex-shrink-0 bg-white rounded-md flex items-center justify-center overflow-hidden border border-neutral-200 shadow-sm"
+                                  className="flex-shrink-0 bg-white rounded-md flex items-center justify-center overflow-hidden border border-neutral-200/80 shadow-sm transition-all duration-300 group-hover:scale-[1.03]"
                                   style={{ width: "64px", height: "64px" }}>
                                   <img
                                     src={imageUrl}
                                     alt={`Subcategory ${idx + 1}`}
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                     loading="lazy"
                                     decoding="async"
                                     onError={(e) => {
@@ -897,7 +851,7 @@ export default function PromoStrip({ activeTab = "all" }: PromoStripProps) {
                             categoryIcons.slice(0, 4).map((icon, idx) => (
                               <div
                                 key={idx}
-                                className="flex-shrink-0 bg-transparent rounded-md flex items-center justify-center overflow-hidden"
+                                className="flex-shrink-0 bg-transparent rounded-md flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:scale-105"
                                 style={{
                                   width: "64px",
                                   height: "64px",

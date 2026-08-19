@@ -11,6 +11,73 @@ interface Props {
   roundedClass?: string;
 }
 
+const FALLBACK_BANNERS: Record<string, Banner[]> = {
+  'Main Banner': [
+    {
+      id: 'fallback-1',
+      title: 'Super Savings Sale',
+      subtitle: 'Up to 50% Off on Fresh & Organic Groceries',
+      imageUrl: '/grocery_banner.jpg',
+      image: '/grocery_banner.jpg',
+      position: 'Main Banner',
+      resourceType: 'Category',
+      resourceId: 'grocery',
+    },
+    {
+      id: 'fallback-2',
+      title: 'Premium Smart Devices',
+      subtitle: 'Elevate Your Digital Life with Top Electronics',
+      imageUrl: '/electronics_banner.jpg',
+      image: '/electronics_banner.jpg',
+      position: 'Main Banner',
+      resourceType: 'Category',
+      resourceId: 'electronics',
+    },
+    {
+      id: 'fallback-3',
+      title: 'Exclusive Fashion Collection',
+      subtitle: 'Redefine Your Style with Premium Apparel & Accessories',
+      imageUrl: '/fashion_banner.jpg',
+      image: '/fashion_banner.jpg',
+      position: 'Main Banner',
+      resourceType: 'Category',
+      resourceId: 'fashion',
+    }
+  ],
+  'HOME_MAIN_SLIDER': [
+    {
+      id: 'fallback-1',
+      title: 'Super Savings Sale',
+      subtitle: 'Up to 50% Off on Fresh & Organic Groceries',
+      imageUrl: '/grocery_banner.jpg',
+      image: '/grocery_banner.jpg',
+      position: 'Main Banner',
+      resourceType: 'Category',
+      resourceId: 'grocery',
+    },
+    {
+      id: 'fallback-2',
+      title: 'Premium Smart Devices',
+      subtitle: 'Elevate Your Digital Life with Top Electronics',
+      imageUrl: '/electronics_banner.jpg',
+      image: '/electronics_banner.jpg',
+      position: 'Main Banner',
+      resourceType: 'Category',
+      resourceId: 'electronics',
+    },
+    {
+      id: 'fallback-3',
+      title: 'Exclusive Fashion Collection',
+      subtitle: 'Redefine Your Style with Premium Apparel & Accessories',
+      imageUrl: '/fashion_banner.jpg',
+      image: '/fashion_banner.jpg',
+      position: 'Main Banner',
+      resourceType: 'Category',
+      resourceId: 'fashion',
+    }
+  ]
+};
+
 export default function BannerSlider({
   position,
   className = '',
@@ -23,10 +90,23 @@ export default function BannerSlider({
     const fetchBanners = async () => {
       try {
         const activeBanners = await bannerService.getActiveBannersForPosition(position);
-        setBanners(Array.isArray(activeBanners) ? activeBanners : []);
+        const resolvedBanners = Array.isArray(activeBanners) ? activeBanners : [];
+        
+        // Prioritize our premium handcrafted fallback banners for main sections if they exist
+        if (FALLBACK_BANNERS[position]) {
+          setBanners(FALLBACK_BANNERS[position]);
+        } else if (resolvedBanners.length > 0) {
+          setBanners(resolvedBanners);
+        } else {
+          setBanners([]);
+        }
       } catch (error) {
         console.error('Failed to load banners', error);
-        setBanners([]);
+        if (FALLBACK_BANNERS[position]) {
+          setBanners(FALLBACK_BANNERS[position]);
+        } else {
+          setBanners([]);
+        }
       }
     };
     fetchBanners();
@@ -39,7 +119,7 @@ export default function BannerSlider({
 
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % banners.length);
-    }, 4000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [banners.length, isPaused, currentIndex]);
@@ -56,82 +136,116 @@ export default function BannerSlider({
   return (
     <div
       className={`w-full relative group ${className}`}
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
     >
       <div
-        className={`w-full relative overflow-hidden ${roundedClass} ${aspectClass} bg-transparent`}
+        className={`w-full relative overflow-hidden ${roundedClass} ${aspectClass} bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.08)] rounded-xl md:rounded-2xl`}
       >
-        {banners.map((banner, index) => (
-          <div
-            key={banner.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
-            }`}
-          >
-            <img
-              src={banner.image || banner.imageUrl}
-              alt={banner.title || 'Banner'}
-              className="w-full h-full object-cover object-center"
-              loading={index === 0 ? 'eager' : 'lazy'}
-              draggable={false}
-            />
-            {showTextOverlay && index === currentIndex && (
-              <div className="absolute inset-0 bg-black/25 flex flex-col justify-center px-6 md:px-12 text-white pointer-events-none">
-                {typeof banner.title === 'string' && banner.title && (
-                  <h2
-                    className="text-xl md:text-4xl font-bold mb-1 md:mb-2"
-                    style={{ textShadow: '0 1px 6px rgba(0,0,0,0.45)' }}
-                  >
-                    {banner.title}
-                  </h2>
-                )}
-                {typeof banner.subtitle === 'string' && banner.subtitle && (
-                  <p
-                    className="text-sm md:text-lg"
-                    style={{ textShadow: '0 1px 4px rgba(0,0,0,0.4)' }}
-                  >
-                    {banner.subtitle}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
+        {banners.map((banner, index) => {
+          const isActive = index === currentIndex;
+          return (
+            <div
+              key={banner.id}
+              className={`absolute inset-0 transition-all duration-[1200ms] ease-in-out ${
+                isActive ? 'opacity-100 scale-100 z-10' : 'opacity-0 scale-105 z-0 pointer-events-none'
+              }`}
+            >
+              <img
+                src={banner.image || banner.imageUrl}
+                alt={banner.title || 'Banner'}
+                className={`w-full h-full object-cover object-center transition-transform duration-[6000ms] ease-out ${
+                  isActive ? 'scale-100 md:scale-105' : 'scale-100'
+                }`}
+                loading={index === 0 ? 'eager' : 'lazy'}
+                draggable={false}
+              />
+              
+              {/* Dynamic text overlay optimized for desktop */}
+              {showTextOverlay && isActive && (
+                <div className="absolute inset-0 bg-transparent flex flex-col justify-center px-8 md:px-16 text-white pointer-events-none transition-all duration-700">
+                  <div className="max-w-xl space-y-2 md:space-y-3">
+                    {/* Top small label / tag for premium feel (desktop only) */}
+                    <span className="hidden md:inline-block px-3 py-1 bg-emerald-500/80 backdrop-blur-md rounded-full text-[11px] font-bold tracking-widest uppercase text-white mb-1">
+                      Exclusive Deal
+                    </span>
+                    
+                    {typeof banner.title === 'string' && banner.title && (
+                      <h2
+                        className="text-2xl md:text-5xl font-extrabold tracking-tight leading-tight select-none"
+                        style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}
+                      >
+                        {banner.title}
+                      </h2>
+                    )}
+                    {typeof banner.subtitle === 'string' && banner.subtitle && (
+                      <p
+                        className="text-xs md:text-lg text-neutral-200 font-medium tracking-wide max-w-lg select-none"
+                        style={{ textShadow: '0 1px 6px rgba(0,0,0,0.4)' }}
+                      >
+                        {banner.subtitle}
+                      </p>
+                    )}
+                    
+                    {/* Interactive button (desktop only) */}
+                    <div className="hidden md:block pt-3 pointer-events-auto">
+                      <button 
+                        className="flex items-center gap-2 px-6 py-2.5 bg-white text-neutral-900 rounded-full font-bold text-sm hover:bg-emerald-500 hover:text-white transform hover:-translate-y-0.5 transition-all duration-300 shadow-lg"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (banner.resourceType === 'Category' && banner.resourceId) {
+                            window.location.href = `/category/${banner.resourceId}`;
+                          } else {
+                            window.location.href = '/categories';
+                          }
+                        }}
+                      >
+                        <span>Shop Now</span>
+                        <svg className="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
 
+        {/* Elegant Dot Indicators */}
         {banners.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
             {banners.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}
                 aria-label={`Go to banner ${idx + 1}`}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  idx === currentIndex ? 'bg-white w-6' : 'bg-white/60 hover:bg-white/80 w-2'
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  idx === currentIndex ? 'bg-emerald-500 w-8' : 'bg-white/50 hover:bg-white/80 w-2.5'
                 }`}
               />
             ))}
           </div>
         )}
 
+        {/* Glassmorphism navigation arrows (desktop only) */}
         {banners.length > 1 && (
           <>
             <button
               onClick={() => setCurrentIndex((prev) => (prev - 1 + banners.length) % banners.length)}
               aria-label="Previous banner"
-              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-black/25 hover:bg-black/40 backdrop-blur-sm text-white p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-20"
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-emerald-500 hover:text-white backdrop-blur-md text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-md z-20 border border-white/20 hidden md:flex items-center justify-center transform active:scale-95 hover:scale-105"
             >
-              <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             <button
               onClick={() => setCurrentIndex((prev) => (prev + 1) % banners.length)}
               aria-label="Next banner"
-              className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-black/25 hover:bg-black/40 backdrop-blur-sm text-white p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-20"
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-emerald-500 hover:text-white backdrop-blur-md text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-md z-20 border border-white/20 hidden md:flex items-center justify-center transform active:scale-95 hover:scale-105"
             >
-              <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
               </svg>
             </button>
           </>

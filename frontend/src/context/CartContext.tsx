@@ -312,7 +312,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return { items: validItems, total, itemCount };
   }, [items]);
 
-  const addToCart = async (product: Product, sourceElement?: HTMLElement | null, options?: { source?: string, sourceId?: string }) => {
+  const addToCart = async (product: Product, sourceElement?: HTMLElement | null, options?: { source?: string, sourceId?: string, customQuantity?: number }) => {
     // Get consistent product ID - MongoDB returns _id, frontend expects id
     const productId = product._id || product.id;
 
@@ -347,6 +347,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const variantId = (product as any).variantId || (product as any).selectedVariant?._id;
     const variantTitle = (product as any).variantTitle || (product as any).pack;
 
+    const targetQty = options?.customQuantity !== undefined ? options.customQuantity : 1;
+
     // Optimistically update state
     setItems((prevItems) => {
       // Filter out null products and find existing item
@@ -373,13 +375,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
           const q = item.quantity || 0;
 
           return match
-            ? { ...item, quantity: q + 1 }
+            ? { ...item, quantity: options?.customQuantity !== undefined ? options.customQuantity : q + 1 }
             : item;
         });
       }
+
       return [...validItems, {
           product: normalizedProduct,
-          quantity: 1,
+          quantity: targetQty,
           variant: variantId || variantTitle,
           variantId,
           variation: variantTitle,
@@ -393,7 +396,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const variation = (product as any).variantTitle || (product as any).pack;
         const response = await apiAddToCart(
           productId,
-          1,
+          targetQty,
           variation,
           location?.latitude,
           location?.longitude,

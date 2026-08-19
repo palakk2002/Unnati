@@ -29,7 +29,7 @@ interface Tab {
 }
 
 const DUMMY_IMAGES: Record<string, string> = {
-  all: 'https://cdn-icons-png.flaticon.com/512/3603/3603123.png',
+  all: 'https://cdn-icons-png.flaticon.com/512/2331/2331970.png',
   electronics: '/electronics.jpg',
   clothing: '/shirt1.jpg',
   fashion: '/shirt1.jpg',
@@ -49,6 +49,7 @@ const DUMMY_IMAGES: Record<string, string> = {
   fitness: '/sports.jpg',
   beauty: '/personal.jpg',
   personal: '/personal.jpg',
+  printer: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=150&auto=format&fit=crop&q=80',
   fallback: '/dairy.jpg'
 };
 
@@ -83,6 +84,7 @@ const getCategoryTabIcon = (c: any) => {
   if (slug.includes('bucket') || slug.includes('home') || slug.includes('clean') || slug.includes('house')) return <img src="/bucket.jpg" alt={c.name} className="w-full h-full object-contain rounded-md" />;
   if (slug.includes('electron') || slug.includes('gadget') || slug.includes('tech')) return <img src="/electronics.jpg" alt={c.name} className="w-full h-full object-contain rounded-md" />;
   if (slug.includes('sport') || slug.includes('fit') || slug.includes('gym')) return <img src="/sports.jpg" alt={c.name} className="w-full h-full object-contain rounded-md" />;
+  if (slug.includes('printer') || slug.includes('paper') || slug.includes('stationery') || slug.includes('office')) return <img src={DUMMY_IMAGES.printer} alt={c.name} className="w-full h-full object-contain rounded-md" />;
 
   // If explicit custom image exists and doesn't match above categories, use it
   if (c.image) {
@@ -502,55 +504,7 @@ export default function HomeHero({ activeTab = 'all', onTabChange }: HomeHeroPro
         transition: 'background-color 0.3s ease',
       }}
     >
-      <div className="px-4 pt-2.5 pb-2 md:hidden flex items-center gap-3">
-        {/* Search Bar */}
-        <div
-          onClick={() => navigate('/search')}
-          className="flex-1 rounded-lg px-3 py-1.5 flex items-center gap-2 cursor-pointer transition-all duration-300 bg-white border border-[#3b82f6] shadow-sm relative z-50"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-neutral-400">
-            <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2.5" />
-            <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-          </svg>
-          <div className="flex-1 relative h-4 overflow-hidden">
-            {searchSuggestions.map((suggestion, index) => {
-              const isActive = index === currentSearchIndex;
-              const prevIndex = (currentSearchIndex - 1 + searchSuggestions.length) % searchSuggestions.length;
-              const isPrev = index === prevIndex;
-              return (
-                <div
-                  key={suggestion}
-                  className={`absolute inset-0 flex items-center transition-all duration-500 ${isActive ? 'translate-y-0 opacity-100' : isPrev ? '-translate-y-full opacity-0' : 'translate-y-full opacity-0'}`}
-                >
-                  <span className="text-xs text-neutral-400 font-sans">
-                    {language === 'HI' ? 'खोजें' : 'Search for'} &apos;{suggestion}&apos;
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* Cart Link with Cart Text */}
-        <Link
-          to="/cart"
-          className="flex-shrink-0 flex items-center gap-1 text-neutral-800 hover:text-blue-500 transition-colors p-1 relative"
-        >
-          <div className="relative">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="9" cy="21" r="1" />
-              <circle cx="20" cy="21" r="1" />
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-            </svg>
-            {cartItemsCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[8px] font-bold rounded-full w-4 h-4 flex items-center justify-center border border-white">
-                {cartItemsCount}
-              </span>
-            )}
-          </div>
-          <span className="text-xs font-semibold text-neutral-800">Cart</span>
-        </Link>
-      </div>
 
       <div className={`${isSticky ? 'pt-3 pb-1 md:pt-4' : 'border-b border-neutral-200 mt-0.5 md:mt-0 pt-3 pb-1.5 md:pt-4'} w-full flex items-center justify-center`}>
         <div className="flex items-center justify-between w-full max-w-7xl mx-auto px-4 md:px-6 gap-1 md:gap-2">
@@ -589,20 +543,20 @@ export default function HomeHero({ activeTab = 'all', onTabChange }: HomeHeroPro
                   key={tab.id}
                   ref={(el) => { if (el) tabRefs.current.set(tab.id, el); else tabRefs.current.delete(tab.id); }}
                   onClick={() => handleTabClick(tab.id)}
-                  className={`flex-shrink-0 flex flex-col items-center justify-between w-[84px] h-[92px] md:w-[96px] md:h-[104px] p-1.5 md:p-2 rounded-xl transition-all duration-200 group border cursor-pointer ${
+                  className={`flex-shrink-0 flex flex-col items-center justify-between w-[68px] h-[78px] md:w-[96px] md:h-[104px] p-1 md:p-2 rounded-xl transition-all duration-200 group border cursor-pointer ${
                     isActive
-                      ? 'border-[#34d399] bg-[#e6f7f2] shadow-sm'
+                      ? 'border-[#163F2E] md:border-[#34d399] bg-[#e6f7f2] shadow-sm'
                       : 'border-neutral-200 bg-white hover:border-neutral-300 shadow-[0_1px_2px_rgba(0,0,0,0.03)]'
                   }`}
                   type="button"
                 >
                   <div className="w-full flex-1 flex items-center justify-center overflow-hidden p-0">
-                    <div className="w-[54px] h-[54px] md:w-[68px] md:h-[68px] flex items-center justify-center flex-shrink-0 [&>svg]:w-full [&>svg]:h-full [&>img]:w-full [&>img]:h-full [&>img]:object-contain transition-transform duration-200 group-hover:scale-105">
+                    <div className="w-[48px] h-[48px] md:w-[68px] md:h-[68px] flex items-center justify-center flex-shrink-0 [&>svg]:w-full [&>svg]:h-full [&>img]:w-full [&>img]:h-full [&>img]:object-contain transition-transform duration-200 group-hover:scale-105">
                       {tab.icon}
                     </div>
                   </div>
                   <span
-                    className={`text-[11px] md:text-[12.5px] leading-tight text-center font-sans truncate w-full px-0.5 ${
+                    className={`text-[9.5px] md:text-[12.5px] leading-tight text-center font-sans truncate w-full px-0.5 ${
                       isActive ? 'font-bold text-[#059669]' : 'font-medium text-neutral-600 group-hover:text-neutral-900'
                     }`}
                   >
@@ -641,60 +595,135 @@ export default function HomeHero({ activeTab = 'all', onTabChange }: HomeHeroPro
       className="relative z-20"
       style={{ backgroundColor: '#ffffff', paddingBottom: 0, marginBottom: 0 }}
     >
-      <div className="md:hidden" style={{ backgroundColor: '#163F2E' }}>
-        <div ref={topSectionRef} className="px-4 pt-2.5 pb-2">
-          <div className="flex items-center justify-between gap-3">
-            {/* Logo */}
-            <div className="flex-shrink-0">
+      <div className="md:hidden bg-white pb-2 pt-2.5 px-4 flex flex-col gap-2.5 border-b border-neutral-100">
+        {/* Row 1: Logo & Multivendor Text (Left) + Lang & Notif (Right) */}
+        <div className="flex items-center justify-between">
+          {/* Logo & Multivendor Text */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-11 h-11 rounded-full overflow-hidden border border-neutral-200 bg-white flex items-center justify-center p-0.5 shadow-sm">
               <img
                 src={config?.appLogo || "/assets/Ecommercestoreslogo.png"}
-                alt={config?.appName || "Ecommerce"}
-                className="h-8 w-auto object-contain rounded-md bg-white/10 p-0.5"
+                alt="Multivendor"
+                className="w-full h-full object-contain"
               />
             </div>
+            <div className="flex flex-col text-left">
+              <span className="text-base font-extrabold tracking-tight leading-none text-[#163F2E]">
+                Multivendor
+              </span>
+              <span className="text-base font-extrabold text-[#d97706] mt-0.5 ml-2.5 opacity-90 leading-none">
+                E-Commerce
+              </span>
+            </div>
+          </div>
 
-            {/* Compact Location Pill */}
-            {locationDisplayText && (
-              <div
-                className={`flex items-center gap-1.5 text-white text-xs cursor-pointer hover:opacity-85 transition-all min-w-0 ${isLocationLoading ? 'opacity-70 pointer-events-none' : ''}`}
-                onClick={() => {
-                  if (!isLocationLoading) {
-                    requestLocation();
-                  }
-                }}
-              >
-                {isLocationLoading ? (
-                  <svg className="animate-spin h-3.5 w-3.5 flex-shrink-0 text-[#F2B134]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                ) : (
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 text-[#F2B134]">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                )}
-                <span className="truncate font-semibold text-white max-w-[130px] sm:max-w-[200px]" title={locationDisplayText}>
-                  {isLocationLoading ? 'Updating...' : locationDisplayText}
-                </span>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 text-white/80">
-                  <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-            )}
-
-            {/* Hamburger Button */}
+          {/* Lang & Notif Icons */}
+          <div className="flex items-center gap-2.5">
+            {/* Language / Hamburger Button */}
             <button
               onClick={() => setIsMenuOpen(true)}
-              className="w-8 h-8 flex items-center justify-center text-white hover:text-white/80 active:scale-95 transition-all flex-shrink-0"
+              className="w-8 h-8 rounded-full border border-neutral-200/80 flex items-center justify-center hover:bg-neutral-50 active:scale-95 transition-all text-neutral-600 shadow-sm"
               aria-label="Open menu"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
               </svg>
             </button>
+
+            {/* Notification Bell */}
+            <Link
+              to="/account"
+              className="w-8 h-8 rounded-full border border-neutral-200/80 flex items-center justify-center hover:bg-neutral-50 active:scale-95 transition-all text-neutral-600 shadow-sm relative"
+              aria-label="Notifications"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+              {/* Green notification badge as requested */}
+              <span className="absolute -top-0.5 -right-1 bg-[#163F2E] text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">
+                3
+              </span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Row 2: Deliver To dropdown (Half Width) */}
+        {locationDisplayText && (
+          <div
+            className="max-w-[65%] border border-neutral-100/90 rounded-2xl py-2 px-3 flex items-center justify-between bg-white cursor-pointer shadow-[0_1px_4px_rgba(0,0,0,0.015)] active:bg-neutral-50 transition-colors"
+            onClick={() => {
+              if (!isLocationLoading) {
+                requestLocation();
+              }
+            }}
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 text-[#d97706]">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <div className="flex flex-col text-left min-w-0">
+                <span className="text-[9px] uppercase tracking-wider font-extrabold text-[#707c97] leading-none">
+                  DELIVER TO
+                </span>
+                <span className="text-[12px] font-extrabold text-[#111827] truncate max-w-[150px] mt-0.5 leading-tight">
+                  {isLocationLoading ? 'Updating Location...' : locationDisplayText}
+                </span>
+              </div>
+            </div>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 text-neutral-400 ml-2">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        )}
+
+        {/* Row 3: Capsule Search Bar (Less Compact / More Spaced out) */}
+        <div
+          onClick={() => navigate('/search')}
+          className="w-full rounded-full py-2 px-3.5 flex items-center justify-between cursor-pointer border border-[#163F2E] bg-white shadow-[0_2px_8px_rgba(22,63,46,0.06)] active:scale-[0.99] transition-all overflow-hidden box-border"
+        >
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            <div className="flex-1 relative h-4 overflow-hidden min-w-0">
+              {searchSuggestions.map((suggestion, index) => {
+                const isActive = index === currentSearchIndex;
+                const prevIndex = (currentSearchIndex - 1 + searchSuggestions.length) % searchSuggestions.length;
+                const isPrev = index === prevIndex;
+                return (
+                  <div
+                    key={suggestion}
+                    className={`absolute inset-0 flex items-center transition-all duration-500 ${isActive ? 'translate-y-0 opacity-100' : isPrev ? '-translate-y-full opacity-0' : 'translate-y-full opacity-0'}`}
+                  >
+                    <span className="text-xs text-neutral-400 font-sans truncate">
+                      Search &quot;Atta, Rice, Oil, Maggi...&quot;
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="flex items-center gap-2.5 flex-shrink-0 ml-1.5">
+            {/* Mic Icon */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-400">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+              <path d="M19 10v1a7 7 0 0 1-14 0v-1" />
+              <line x1="12" y1="19" x2="12" y2="23" />
+              <line x1="8" y1="23" x2="16" y2="23" />
+            </svg>
+            {/* Scanner Barcode Icon (Dark Green) */}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#163F2E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+              <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+              <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+              <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+              <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+              <rect x="7" y="7" width="10" height="10" rx="1" />
+            </svg>
           </div>
         </div>
       </div>

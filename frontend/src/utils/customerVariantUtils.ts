@@ -111,16 +111,54 @@ export function hasMultipleVariants(product: Product | null | undefined): boolea
   return normalizeCustomerVariations(product).length > 1;
 }
 
+const DUMMY_IMAGES = [
+  'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1543083503-087771d347c8?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1506084868230-bb9d95c24759?auto=format&fit=crop&w=600&q=80',
+  'https://images.unsplash.com/photo-1608686207856-001b95cf60ca?auto=format&fit=crop&w=600&q=80',
+];
+
+export function getDummyProductImage(productIdOrName: string): string {
+  if (!productIdOrName) return DUMMY_IMAGES[0];
+  let hash = 0;
+  for (let i = 0; i < productIdOrName.length; i++) {
+    hash = productIdOrName.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % DUMMY_IMAGES.length;
+  return DUMMY_IMAGES[index];
+}
+
 export function getProductCardImage(product: Product | null | undefined): string {
   const primary = getPrimaryVariant(product);
   const variantImage = getVariantImage(primary);
-  if (variantImage) return variantImage;
+  let mainImage = variantImage;
 
-  const rootGallery = resolveProductGallery(product);
-  if (rootGallery.length > 0) return rootGallery[0];
+  if (!mainImage) {
+    const rootGallery = resolveProductGallery(product);
+    if (rootGallery.length > 0) mainImage = rootGallery[0];
+  }
 
-  const listing = (product as any)?.listing;
-  return listing?.imageUrl || product?.imageUrl || product?.mainImage || '';
+  if (!mainImage) {
+    const listing = (product as any)?.listing;
+    mainImage = listing?.imageUrl || product?.imageUrl || product?.mainImage || '';
+  }
+
+  if (!mainImage) {
+    const key = product?.id || product?._id || product?.name || product?.productName || 'fallback';
+    return getDummyProductImage(String(key));
+  }
+
+  // Handle relative image paths from backend uploads (e.g. starting with /uploads or uploads)
+  if (mainImage.startsWith('/') || (!mainImage.startsWith('http') && mainImage.includes('upload'))) {
+    // Determine backend URL from VITE_API_BASE_URL or default to http://localhost:5000
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
+    const serverOrigin = apiBase.split('/api/')[0] || 'http://localhost:5000';
+    const cleanPath = mainImage.startsWith('/') ? mainImage : `/${mainImage}`;
+    return `${serverOrigin}${cleanPath}`;
+  }
+
+  return mainImage;
 }
 
 export function buildProductWithPrimaryVariant(product: Product): Product & {

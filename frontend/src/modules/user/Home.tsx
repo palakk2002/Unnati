@@ -1,16 +1,18 @@
 import { useState, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { useLocation as useRouterLocation, useNavigate, useNavigationType } from "react-router-dom";
 import HomeHero from "./components/HomeHero";
-import PromoStrip from "./components/PromoStrip";
+import HomeFlashSaleBanner from "./components/HomeFlashSaleBanner";
+import NewArrivalsSection from "./components/NewArrivalsSection";
 import LowestPricesEver from "./components/LowestPricesEver";
 import CategoryTileSection from "./components/CategoryTileSection";
 import ProductCard from "./components/ProductCard";
 import BannerSlider from "./components/banners/BannerSlider";
 import HomePopup from "./components/banners/HomePopup";
 import FlashDealSection from "./components/banners/FlashDealSection";
-import FeaturedDeal from "./components/banners/FeaturedDeal";
+import HomeThreePromoBanners from "./components/banners/HomeThreePromoBanners";
 import DealOfTheDay from "./components/banners/DealOfTheDay";
 import FirstOrderOfferBanner from "./components/banners/FirstOrderOfferBanner";
+import FeaturedCategoriesSection from "./components/FeaturedCategoriesSection";
 import { getCachedHomeContent, getHomeContent } from "../../services/api/customerHomeService";
 import { getHeaderCategoriesPublic } from "../../services/api/headerCategoryService";
 import { getCachedProducts, getProducts as getCustomerProducts } from "../../services/api/customerProductService";
@@ -488,13 +490,18 @@ export default function Home() {
 
       {/* 2. MAIN SLIDER - White Background */}
       <div
-        className="px-2 md:px-4 lg:px-4 pt-0 pb-1 mt-0.5 md:mt-1"
+        className="w-full px-4 pt-[22px] pb-[18px] md:px-4 md:pt-0 md:pb-1 mt-0.5 md:mt-1"
       >
-          <BannerSlider position="HOME_MAIN_SLIDER" />
+          <BannerSlider position="HOME_MAIN_SLIDER" roundedClass="rounded-2xl md:rounded-2xl" />
       </div>
+      {/* Featured Categories Section */}
+      <FeaturedCategoriesSection />
 
-      {/* Promo Strip */}
-      <PromoStrip activeTab={activeTab} />
+      {/* Flash Sale Slider Banner */}
+      <HomeFlashSaleBanner />
+
+      {/* New Arrivals Section */}
+      <NewArrivalsSection />
 
       {/* LOWEST PRICES EVER Section */}
       <LowestPricesEver activeTab={activeTab} products={homeData.lowestPrices} />
@@ -509,11 +516,8 @@ export default function Home() {
         style={{ backgroundColor: '#f9fafb' }}
       >
 
-        {/* FLASH DEAL Section */}
-        <FlashDealSection />
-
-        {/* Featured Deal Section */}
-        <FeaturedDeal />
+        {/* Three Promotional Banners Section */}
+        <HomeThreePromoBanners />
 
         {/* Bestsellers Section (Moved here as requested) */}
         {activeTab === "all" && homeData.bestsellers && homeData.bestsellers.length > 0 && (
@@ -538,9 +542,6 @@ export default function Home() {
               />
             </div>
         )}
-
-        {/* Deal of the Day Section */}
-        <DealOfTheDay />
 
         {/* First Order Offer (First-time users) */}
         <FirstOrderOfferBanner />
@@ -626,10 +627,6 @@ export default function Home() {
             )}
 
 
-            {/* Main Section Banner */}
-            <div className="px-2 md:px-4 lg:px-4 mt-6 mb-6">
-                <BannerSlider position="Main Section Banner" />
-            </div>
 
             {/* Shop by Store Section */}
             <div className="mb-6 mt-6 md:mb-8 md:mt-8">
@@ -687,10 +684,6 @@ export default function Home() {
           </>
         )}
 
-        {/* Footer Banner */}
-        <div className="px-2 md:px-4 lg:px-4 mt-6 mb-8">
-             <BannerSlider position="Footer Banner" />
-        </div>
       </div>
     </div>
   );

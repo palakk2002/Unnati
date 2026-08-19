@@ -340,7 +340,7 @@ const AdminOnlineOrderReport = () => {
 
           <div className="mt-4 flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
-              <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400">
+              <span className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </span>
               <input
@@ -348,7 +348,7 @@ const AdminOnlineOrderReport = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by Order ID, Customer, Phone or Payment..."
-                className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-100 rounded-xl text-sm font-semibold focus:border-[var(--primary-color)] focus:ring-4 focus:ring-indigo-50 transition-all outline-none"
+                className="w-full pl-4 pr-11 py-2.5 bg-white border border-gray-100 rounded-xl text-sm font-semibold focus:border-[var(--primary-color)] focus:ring-4 focus:ring-indigo-50 transition-all outline-none"
               />
             </div>
 

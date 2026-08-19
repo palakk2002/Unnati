@@ -140,14 +140,20 @@ export default function ProductCard({
   const cartItem = findCartItemForPrimaryVariant(cart.items, product);
   const inCartQty = cartItem?.quantity || 0;
 
-  const [localQty, setLocalQty] = useState(inCartQty);
+  const [localQty, setLocalQty] = useState<string | number>(inCartQty);
   useEffect(() => {
     setLocalQty(inCartQty);
   }, [inCartQty]);
 
   const handleQuantityInputChange = async (val: string) => {
-    if (val === '') {
-      setLocalQty(0);
+    if (val === '' || val === '0') {
+      setLocalQty('');
+      await updateQuantity(
+        ((product as any).id || product._id) as string,
+        0,
+        primaryVariantId,
+        primaryVariantLabel
+      );
       return;
     }
     const num = parseInt(val, 10);
@@ -162,23 +168,21 @@ export default function ProductCard({
     }
   };
 
-  const handleQuantityInputBlurOrSubmit = async (newQty: number) => {
-    if (newQty === inCartQty) return;
-    if (newQty <= 0) {
-      await updateQuantity(
-        ((product as any).id || product._id) as string,
-        0,
-        primaryVariantId,
-        primaryVariantLabel
-      );
-    } else {
-      await updateQuantity(
-        ((product as any).id || product._id) as string,
-        newQty,
-        primaryVariantId,
-        primaryVariantLabel
-      );
+  const handleQuantityInputBlurOrSubmit = async (val: string | number) => {
+    const num = val === '' ? 0 : typeof val === 'string' ? parseInt(val, 10) : val;
+    const targetQty = isNaN(num) || num < 0 ? 0 : num;
+
+    if (targetQty === inCartQty) {
+      setLocalQty(inCartQty);
+      return;
     }
+
+    await updateQuantity(
+      ((product as any).id || product._id) as string,
+      targetQty,
+      primaryVariantId,
+      primaryVariantLabel
+    );
   };
 
   // Get Price and MRP using primary variant (first created) with legacy fallbacks
@@ -338,7 +342,7 @@ export default function ProductCard({
               ref={imageRef}
               src={cardImageUrl}
               alt={product.name || product.productName || 'Product'}
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
               onError={(e) => {
                 // Hide broken image and show fallback
@@ -608,7 +612,7 @@ export default function ProductCard({
                           title="Click to type quantity manually (e.g. 50)"
                           className={`${
                             compact ? 'w-9 text-xs py-0.5' : 'w-12 text-sm py-1'
-                          } text-center font-black bg-transparent border-0 focus:bg-white focus:ring-2 focus:ring-[var(--customer-primary)] rounded-md text-neutral-900 outline-none transition-all cursor-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                          } text-center font-black bg-transparent border-0 focus:bg-transparent focus:ring-0 focus:outline-none text-neutral-900 outline-none transition-all cursor-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                         />
 
                         <button
@@ -805,7 +809,7 @@ export default function ProductCard({
                   title="Click to type quantity manually (e.g. 50)"
                   className={`${
                     compact ? 'w-9 text-xs py-0.5' : 'w-12 text-sm py-1'
-                  } text-center font-black bg-transparent border-0 focus:bg-white focus:ring-2 focus:ring-[var(--customer-primary)] rounded-md text-neutral-900 outline-none transition-all cursor-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                  } text-center font-black bg-transparent border-0 focus:bg-transparent focus:ring-0 focus:outline-none text-neutral-900 outline-none transition-all cursor-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                 />
 
                 <button

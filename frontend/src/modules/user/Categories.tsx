@@ -165,15 +165,14 @@ export default function Categories() {
   return (
     <div className="pb-4 md:pb-8 bg-white min-h-screen">
       {/* Page Header */}
-      {/* Page Header */}
       <div className="px-4 py-4 md:px-6 md:py-6 bg-white border-b border-neutral-200 fixed top-0 left-0 right-0 z-20 shadow-sm md:sticky md:top-0">
         <h1 className="text-2xl md:text-3xl font-black text-neutral-900">Categories</h1>
       </div>
       {/* Spacer for fixed header on mobile */}
       <div className="h-[61px] md:hidden"></div>
 
-      <div className="bg-neutral-50 pt-1 space-y-5 md:space-y-8 md:pt-4">
-        {/* Render all admin-created home sections */}
+      {/* Desktop view: original layout */}
+      <div className="hidden md:block bg-neutral-50 pt-1 space-y-5 md:space-y-8 md:pt-4">
         {homeData.homeSections && homeData.homeSections.length > 0 ? (
           <>
             {homeData.homeSections.map((section: any) => {
@@ -239,6 +238,104 @@ export default function Categories() {
           </div>
         )}
       </div>
+
+      {/* Mobile view: beautiful custom circular layout matching user mockup exactly */}
+      <div className="block md:hidden bg-white px-4 pt-4 space-y-6">
+        {homeData.homeSections && homeData.homeSections.length > 0 ? (
+          homeData.homeSections.map((section: any) => {
+            if (section.data && section.data.length > 0) {
+              // We render categories/subcategories/products section styled as mockup
+              return (
+                <div key={section.id} className="space-y-4">
+                  {section.title && (
+                    <h2 className="text-xl font-bold text-neutral-900" style={{ fontFamily: "Inter, sans-serif" }}>
+                      {section.title}
+                    </h2>
+                  )}
+                  <div className="grid grid-cols-4 gap-x-2 gap-y-4">
+                    {section.data.map((tile: any, idx: number) => {
+                      // High quality fallback icons or images
+                      const slug = (tile.slug || tile.id || tile.name || "").toLowerCase();
+                      let fallbackImage = "/dairy.jpg";
+                      if (slug.includes("women") || slug.includes("lady") || slug.includes("ladies") || slug.includes("female")) fallbackImage = "/women.jpg";
+                      else if (slug.includes("shirt") || slug.includes("cloth") || slug.includes("fashion") || slug.includes("men")) fallbackImage = "/shirt1.jpg";
+                      else if (slug.includes("cold") || slug.includes("bev") || slug.includes("drink") || slug.includes("winter") || slug.includes("juice") || slug.includes("water") || slug.includes("coffee") || slug.includes("tea")) fallbackImage = "/cold.jpg";
+                      else if (slug.includes("dairy") || slug.includes("grocer") || slug.includes("food") || slug.includes("milk") || slug.includes("egg") || slug.includes("rice") || slug.includes("atta") || slug.includes("dal") || slug.includes("besan") || slug.includes("sooji") || slug.includes("poha") || slug.includes("rajma") || slug.includes("moong") || slug.includes("millet")) fallbackImage = "/dairy.jpg";
+                      else if (slug.includes("person") || slug.includes("beaut") || slug.includes("hygiene") || slug.includes("care")) fallbackImage = "/personal.jpg";
+                      else if (slug.includes("bucket") || slug.includes("home") || slug.includes("clean") || slug.includes("house")) fallbackImage = "/bucket.jpg";
+                      else if (slug.includes("electron") || slug.includes("gadget") || slug.includes("tech")) fallbackImage = "/electronics.jpg";
+                      
+                      // Curated list of soft subtle pastel border/background tints for circles as in the image
+                      const pastels = ["#F2FCE4", "#FFF3EB", "#ECFFEC", "#FEEFEA", "#FFF8EB", "#F5F5FF", "#F8F0FF"];
+                      const bgCircle = pastels[idx % pastels.length];
+
+                      const imgUrl = tile.image || (tile.productImages && tile.productImages[0]) || fallbackImage;
+
+                      // Link click navigation helper
+                      const itemLink = tile.subcategoryId || tile.type === "subcategory"
+                        ? tile.categoryId
+                          ? `/category/${tile.categoryId}?subcategory=${tile.subcategoryId || tile.id}`
+                          : tile.slug
+                            ? `/category/${tile.slug}`
+                            : `/category/subcategory/${tile.subcategoryId || tile.id}`
+                        : tile.productId
+                          ? `/product/${tile.productId}`
+                          : tile.type === "category"
+                            ? tile.slug
+                              ? `/category/${tile.slug}`
+                              : tile.categoryId
+                                ? `/category/${tile.categoryId}`
+                                : "#"
+                            : tile.categoryId
+                              ? `/category/${tile.categoryId}`
+                              : (tile as any).sellerId
+                                ? `/seller/${(tile as any).sellerId}`
+                                : "#";
+
+                      return (
+                        <a
+                          key={tile.id || idx}
+                          href={itemLink}
+                          className="flex flex-col items-center text-center space-y-1.5 focus:outline-none"
+                        >
+                          {/* Inner Round Circle Container */}
+                          <div 
+                            className="w-[86px] h-[86px] rounded-full flex items-center justify-center overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.06)] border border-neutral-100/50"
+                            style={{ backgroundColor: bgCircle }}
+                          >
+                            <img
+                              src={imgUrl}
+                              alt={tile.name}
+                              className="w-[82%] h-[82%] object-contain rounded-full"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = fallbackImage;
+                              }}
+                            />
+                          </div>
+                          {/* Label Underneath */}
+                          <span 
+                            className="text-[10px] font-bold text-neutral-800 leading-tight w-full line-clamp-3 px-0.5"
+                            style={{ fontFamily: "sans-serif" }}
+                          >
+                            {tile.name ? tile.name.charAt(0).toUpperCase() + tile.name.slice(1).toLowerCase() : ""}
+                          </span>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            }
+            return null;
+          })
+        ) : (
+          <div className="text-center py-12 text-neutral-500">
+            <p className="text-lg mb-2">No categories found</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+

@@ -135,6 +135,11 @@ export interface PurchaseEntryRecord {
 const POS_ENTRY_DRAFT_KEY = 'admin_pos_purchase_entry_draft_v2';
 const POS_ENTRY_DRAFT_LEGACY_KEYS: readonly string[] = ['admin_pos_purchase_entry_draft_v1'];
 
+const formatProductName = (name: string) => {
+  if (!name) return "";
+  return name.toLowerCase().replace(/(?:^|[\s_\-/])\w/g, c => c.toUpperCase());
+};
+
 const AdminPOSOrders = () => {
    const [searchParams] = useSearchParams();
    const editOrderId = searchParams.get('edit');
@@ -196,10 +201,10 @@ const AdminPOSOrders = () => {
   const DUMMY_POS_CART_ITEMS: CartItem[] = [
     {
       _id: 'dummy_pos_item_1',
-      productName: 'CAP_Test_28-07 - Default',
-      price: 200,
-      compareAtPrice: 250,
-      qty: 1,
+      productName: 'CAPITAL BULUBUL NANO RS20',
+      price: 20,
+      compareAtPrice: 20,
+      qty: 6,
       rackNumber: 'Rack-101',
       storageLocation: {
         city: 'Mumbai',
@@ -208,7 +213,7 @@ const AdminPOSOrders = () => {
         rackNumber: 'Rack-101'
       },
       stock: 50,
-      sku: 'CAP-2807',
+      sku: 'CAP-BUL-NANO-20',
       description: '',
       category: 'Default',
       seller: '',
@@ -226,9 +231,39 @@ const AdminPOSOrders = () => {
     } as any,
     {
       _id: 'dummy_pos_item_2',
-      productName: 'CAPITAL BULUBUL NANO RS20',
-      price: 160,
-      compareAtPrice: 180,
+      productName: 'CAPITAL BULBUL KHUTI RS20',
+      price: 150,
+      compareAtPrice: 160,
+      qty: 1,
+      rackNumber: 'Rack-205',
+      storageLocation: {
+        city: 'Mumbai',
+        warehouse: 'Andheri Warehouse (AW-02)',
+        room: 'Room C',
+        rackNumber: 'Rack-205'
+      },
+      stock: 20,
+      sku: 'CAP-BUL-KHUTI-20',
+      description: '',
+      category: 'Hardware',
+      seller: '',
+      galleryImages: [],
+      publish: true,
+      popular: false,
+      dealOfDay: false,
+      status: 'Active',
+      isReturnable: true,
+      tags: [],
+      requiresApproval: false,
+      totalAllowedQuantity: 10,
+      galleryImageUrls: [],
+      variations: []
+    } as any,
+    {
+      _id: 'dummy_pos_item_3',
+      productName: 'CAPITAL BULBUL SUPER RS50',
+      price: 50,
+      compareAtPrice: 50,
       qty: 1,
       rackNumber: 'Rack-102',
       storageLocation: {
@@ -238,7 +273,7 @@ const AdminPOSOrders = () => {
         rackNumber: 'Rack-102'
       },
       stock: 35,
-      sku: 'CAP-BUL-NANO',
+      sku: 'CAP-BUL-SUPER-50',
       description: '',
       category: 'Electronics',
       seller: '',
@@ -255,20 +290,230 @@ const AdminPOSOrders = () => {
       variations: []
     } as any,
     {
-      _id: 'dummy_pos_item_3',
-      productName: 'CAPITAL BULBUL KHUTI RS20',
-      price: 150,
-      compareAtPrice: 160,
+      _id: 'dummy_pos_item_4',
+      productName: 'CAPITAL BULBUL CLASSIC RS10',
+      price: 10,
+      compareAtPrice: 10,
+      qty: 2,
+      rackNumber: 'Rack-105',
+      storageLocation: {
+        city: 'Delhi',
+        warehouse: 'Okhla Warehouse (OW-01)',
+        room: 'Room D',
+        rackNumber: 'Rack-105'
+      },
+      stock: 100,
+      sku: 'CAP-BUL-CLASSIC-10',
+      description: '',
+      category: 'Default',
+      seller: '',
+      galleryImages: [],
+      publish: true,
+      popular: false,
+      dealOfDay: false,
+      status: 'Active',
+      isReturnable: true,
+      tags: [],
+      requiresApproval: false,
+      totalAllowedQuantity: 10,
+      galleryImageUrls: [],
+      variations: []
+    } as any,
+    {
+      _id: 'dummy_pos_item_5',
+      productName: 'CAPITAL BULBUL GOLD RS100',
+      price: 90,
+      compareAtPrice: 100,
       qty: 1,
-      rackNumber: 'Rack-205',
+      rackNumber: 'Rack-201',
+      storageLocation: {
+        city: 'Mumbai',
+        warehouse: 'Mumbai Central Warehouse (MC-01)',
+        room: 'Room A',
+        rackNumber: 'Rack-201'
+      },
+      stock: 15,
+      sku: 'CAP-BUL-GOLD-100',
+      description: '',
+      category: 'Hardware',
+      seller: '',
+      galleryImages: [],
+      publish: true,
+      popular: false,
+      dealOfDay: false,
+      status: 'Active',
+      isReturnable: true,
+      tags: [],
+      requiresApproval: false,
+      totalAllowedQuantity: 10,
+      galleryImageUrls: [],
+      variations: []
+    } as any,
+    {
+      _id: 'dummy_pos_item_6',
+      productName: 'CAPITAL BULBUL MINI RS5',
+      price: 5,
+      compareAtPrice: 5,
+      qty: 10,
+      rackNumber: 'Rack-108',
+      storageLocation: {
+        city: 'Delhi',
+        warehouse: 'Okhla Warehouse (OW-01)',
+        room: 'Room B',
+        rackNumber: 'Rack-108'
+      },
+      stock: 200,
+      sku: 'CAP-BUL-MINI-5',
+      description: '',
+      category: 'Default',
+      seller: '',
+      galleryImages: [],
+      publish: true,
+      popular: false,
+      dealOfDay: false,
+      status: 'Active',
+      isReturnable: true,
+      tags: [],
+      requiresApproval: false,
+      totalAllowedQuantity: 10,
+      galleryImageUrls: [],
+      variations: []
+    } as any,
+    {
+      _id: 'dummy_pos_item_7',
+      productName: 'CAPITAL BULBUL PRIME RS40',
+      price: 35,
+      compareAtPrice: 40,
+      qty: 2,
+      rackNumber: 'Rack-302',
       storageLocation: {
         city: 'Mumbai',
         warehouse: 'Andheri Warehouse (AW-02)',
         room: 'Room C',
-        rackNumber: 'Rack-205'
+        rackNumber: 'Rack-302'
       },
-      stock: 20,
-      sku: 'CAP-BUL-KHUTI',
+      stock: 40,
+      sku: 'CAP-BUL-PRIME-40',
+      description: '',
+      category: 'Electronics',
+      seller: '',
+      galleryImages: [],
+      publish: true,
+      popular: false,
+      dealOfDay: false,
+      status: 'Active',
+      isReturnable: true,
+      tags: [],
+      requiresApproval: false,
+      totalAllowedQuantity: 10,
+      galleryImageUrls: [],
+      variations: []
+    } as any,
+    {
+      _id: 'dummy_pos_item_8',
+      productName: 'CAPITAL BULBUL ULTRA RS150',
+      price: 140,
+      compareAtPrice: 150,
+      qty: 1,
+      rackNumber: 'Rack-401',
+      storageLocation: {
+        city: 'Mumbai',
+        warehouse: 'Mumbai Central Warehouse (MC-01)',
+        room: 'Room D',
+        rackNumber: 'Rack-401'
+      },
+      stock: 10,
+      sku: 'CAP-BUL-ULTRA-150',
+      description: '',
+      category: 'Hardware',
+      seller: '',
+      galleryImages: [],
+      publish: true,
+      popular: false,
+      dealOfDay: false,
+      status: 'Active',
+      isReturnable: true,
+      tags: [],
+      requiresApproval: false,
+      totalAllowedQuantity: 10,
+      galleryImageUrls: [],
+      variations: []
+    } as any,
+    {
+      _id: 'dummy_pos_item_9',
+      productName: 'CAPITAL BULBUL MAX RS200',
+      price: 180,
+      compareAtPrice: 200,
+      qty: 1,
+      rackNumber: 'Rack-110',
+      storageLocation: {
+        city: 'Delhi',
+        warehouse: 'Okhla Warehouse (OW-01)',
+        room: 'Room E',
+        rackNumber: 'Rack-110'
+      },
+      stock: 25,
+      sku: 'CAP-BUL-MAX-200',
+      description: '',
+      category: 'Electronics',
+      seller: '',
+      galleryImages: [],
+      publish: true,
+      popular: false,
+      dealOfDay: false,
+      status: 'Active',
+      isReturnable: true,
+      tags: [],
+      requiresApproval: false,
+      totalAllowedQuantity: 10,
+      galleryImageUrls: [],
+      variations: []
+    } as any,
+    {
+      _id: 'dummy_pos_item_10',
+      productName: 'CAPITAL BULBUL SLIM RS15',
+      price: 15,
+      compareAtPrice: 15,
+      qty: 5,
+      rackNumber: 'Rack-112',
+      storageLocation: {
+        city: 'Delhi',
+        warehouse: 'Okhla Warehouse (OW-01)',
+        room: 'Room F',
+        rackNumber: 'Rack-112'
+      },
+      stock: 80,
+      sku: 'CAP-BUL-SLIM-15',
+      description: '',
+      category: 'Default',
+      seller: '',
+      galleryImages: [],
+      publish: true,
+      popular: false,
+      dealOfDay: false,
+      status: 'Active',
+      isReturnable: true,
+      tags: [],
+      requiresApproval: false,
+      totalAllowedQuantity: 10,
+      galleryImageUrls: [],
+      variations: []
+    } as any,
+    {
+      _id: 'dummy_pos_item_11',
+      productName: 'CAPITAL BULBUL PRO RS80',
+      price: 75,
+      compareAtPrice: 80,
+      qty: 1,
+      rackNumber: 'Rack-208',
+      storageLocation: {
+        city: 'Mumbai',
+        warehouse: 'Andheri Warehouse (AW-02)',
+        room: 'Room A',
+        rackNumber: 'Rack-208'
+      },
+      stock: 30,
+      sku: 'CAP-BUL-PRO-80',
       description: '',
       category: 'Hardware',
       seller: '',
@@ -293,12 +538,17 @@ const AdminPOSOrders = () => {
       if (savedBills) {
         const parsed = JSON.parse(savedBills);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const normalized = parsed.map((bill: Bill) => ({
-            ...bill,
-            cart: Array.isArray(bill.cart) && bill.cart.length > 0
-              ? bill.cart.map((item) => normalizePosCartItem(item as CartItem))
-              : DUMMY_POS_CART_ITEMS,
-          }));
+          const normalized = parsed.map((bill: Bill) => {
+            const hasDummy = Array.isArray(bill.cart) && bill.cart.some((item: any) => item._id && String(item._id).startsWith('dummy_pos_item_'));
+            return {
+              ...bill,
+              cart: hasDummy
+                ? DUMMY_POS_CART_ITEMS
+                : (Array.isArray(bill.cart) && bill.cart.length > 0
+                  ? bill.cart.map((item) => normalizePosCartItem(item as CartItem))
+                  : DUMMY_POS_CART_ITEMS),
+            };
+          });
           if (normalized.length === 1) {
              // Normalize single remaining bill's name to "Bill 1"
              normalized[0] = { ...normalized[0], name: 'Bill 1' };
@@ -3843,7 +4093,7 @@ const AdminPOSOrders = () => {
 
           {/* Search Bar Section */}
           {/* Search Bar Section - Visible only on Desktop */}
-          <div className="hidden lg:block px-6 py-2 bg-gray-50/50 border-b border-gray-100 relative z-30">
+          <div className="hidden lg:block px-6 pt-2 pb-1 bg-gray-50/50 border-b border-gray-100 relative z-30">
              <div ref={searchRef} className="relative w-full mx-auto">
                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                      <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -3956,15 +4206,15 @@ const AdminPOSOrders = () => {
 
           {/* Bill Tabs */}
 
-            <div className="flex-none flex items-center gap-2 px-2.5 pt-2 overflow-x-auto border-b border-gray-200 bg-gray-50">
+            <div className="flex-none flex items-center gap-2 px-2.5 pt-1 overflow-x-auto border-b border-gray-200 bg-gray-50">
               {bills.map(bill => (
                 <div
                   key={bill.id}
                   onClick={() => setActiveBillId(bill.id)}
                   className={`
-                    flex items-center gap-2.5 pl-3.5 pr-2.5 py-2 sm:py-2.5 rounded-none cursor-pointer border-t border-l border-r transition-all min-w-[115px] sm:min-w-[125px] justify-between select-none
+                    flex items-center gap-2.5 pl-3.5 pr-2.5 h-9 sm:h-10 rounded-none cursor-pointer border-t border-l border-r transition-all min-w-[115px] sm:min-w-[125px] justify-between select-none
                     ${String(activeBillId) === String(bill.id)
-                      ? 'bg-[#0d055a] border-[#0d055a] border-b-transparent text-white relative -mb-[1px] z-10 shadow-[0_-2px_4px_rgba(0,0,0,0.04)]'
+                      ? 'bg-[#223129] border-[#223129] border-b-transparent text-white relative -mb-[1px] z-10 shadow-[0_-2px_4px_rgba(0,0,0,0.04)]'
                       : 'bg-gray-600 border-gray-600 text-white hover:bg-gray-700'}
                   `}
                 >
@@ -3988,14 +4238,20 @@ const AdminPOSOrders = () => {
                 </div>
               ))}
 
-              <button
+              <div
                 onClick={() => createNewBill()}
-                className="flex items-center justify-center gap-1.5 px-3 py-1.5 h-9 rounded-none bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 transition-colors ml-2 flex-shrink-0 shadow-sm text-xs sm:text-sm font-bold"
+                style={{
+                  width: '25%',
+                  minWidth: '25%',
+                  maxWidth: '25%',
+                  height: '40px'
+                }}
+                className="flex items-center justify-center gap-1.5 pl-3.5 pr-2.5 rounded-none cursor-pointer border-t border-l border-r border-gray-300 transition-all select-none bg-white text-gray-700 hover:bg-gray-100 ml-2 flex-shrink-0 shadow-sm text-xs sm:text-sm font-bold"
                 title="New Bill"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path></svg>
                 <span>Add Bill</span>
-              </button>
+              </div>
             </div>
 
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden lg:overflow-visible lg:h-auto lg:min-h-0">
@@ -4155,14 +4411,10 @@ const AdminPOSOrders = () => {
                       />
                     </div>
                   )}
-                  <div className="flex-1 min-h-0 overflow-y-auto p-4 pb-40 lg:p-4 lg:pb-0 lg:overflow-y-auto custom-pos-scroll mt-4">
-                      <div className={mobileCartView === 'grid'
-                          ? 'grid grid-cols-2 gap-2 lg:flex lg:flex-col'
-                          : 'space-y-2 flex flex-col'
-                      }>
-                  {/* Desktop Header Row */}
-                  <div className="hidden lg:grid gap-2 text-xs font-bold text-black pb-2 border-b border-gray-100 px-2 sticky top-0 bg-white z-10" style={{ gridTemplateColumns: 'repeat(14, minmax(0, 1fr))' }}>
-                      <div className="col-span-1 text-center">Sr.no</div>
+
+                  {/* Desktop Header Row (Outside scroll container to stay fixed) */}
+                  <div className="hidden lg:grid gap-2 text-xs font-bold text-black pb-2 border-b border-gray-100 mx-4 px-2 mt-4 z-10" style={{ gridTemplateColumns: '35px 40px 50px 1fr 1fr 1fr 1fr 1.6fr 1fr 1fr 1.2fr 1.2fr 2.2fr 0.8fr' }}>
+                      <div className="col-span-1 text-left pl-0.5">Sr.no</div>
                       <div className="col-span-1 text-center">Edit</div>
                       <div className="col-span-1 text-center">Image</div>
                       <div className="col-span-2">Name</div>
@@ -4171,16 +4423,13 @@ const AdminPOSOrders = () => {
                           <select
                             value={locationDisplayAttr}
                             onChange={(e) => setLocationDisplayAttr(e.target.value as any)}
-                            className="appearance-none bg-transparent hover:bg-gray-100 font-bold text-xs text-black pr-4 pl-1 py-0.5 rounded cursor-pointer outline-none focus:ring-1 focus:ring-[var(--primary-color)] transition-all text-center"
+                            className="bg-transparent hover:bg-gray-100 font-bold text-xs text-black pl-1 py-0.5 rounded cursor-pointer outline-none focus:ring-1 focus:ring-[var(--primary-color)] transition-all text-center"
                           >
                             <option value="rack">Rack No.</option>
                             <option value="city">City</option>
                             <option value="warehouse">Warehouse</option>
                             <option value="room">Room</option>
                           </select>
-                          <svg className="w-3 h-3 text-gray-500 absolute right-0 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                          </svg>
                         </div>
                       </div>
                       <div className="col-span-1 text-center">MRP</div>
@@ -4189,6 +4438,12 @@ const AdminPOSOrders = () => {
                       <div className="col-span-1 text-center">Sub Total</div>
                       <div className="col-span-1 text-center">Delete</div>
                   </div>
+
+                  <div className="flex-1 min-h-0 overflow-y-auto p-4 pb-40 md:pb-4 lg:p-4 lg:pb-4 lg:overflow-y-auto custom-pos-scroll mt-2">
+                      <div className={mobileCartView === 'grid'
+                          ? 'grid grid-cols-2 gap-2 lg:flex lg:flex-col'
+                          : 'space-y-2 flex flex-col'
+                      }>
 
                   {(() => {
                       const filteredCart = filterItemsByLocation(cart, locationFilter);
@@ -4362,11 +4617,11 @@ const AdminPOSOrders = () => {
                                   </div>
                               )}
                                    {/* --- DESKTOP VIEW (Table Row Style) --- */}
-                               <div className="hidden lg:grid gap-2 items-center py-0.5 px-2 border-b border-gray-100 hover:bg-gray-50/80 transition-all even:bg-gray-50/20" style={{ gridTemplateColumns: 'repeat(14, minmax(0, 1fr))' }}>
-                                    {/* Sr No */}
-                                    <div className="col-span-1 text-center text-gray-500 text-xs font-bold">
-                                        {index + 1}
-                                    </div>
+                                <div className="hidden lg:grid gap-2 items-center py-0.5 px-2 border-b border-gray-100 hover:bg-gray-50/80 transition-all even:bg-gray-50/20" style={{ gridTemplateColumns: '35px 40px 50px 1fr 1fr 1fr 1fr 1.6fr 1fr 1fr 1.2fr 1.2fr 2.2fr 0.8fr' }}>
+                                     {/* Sr No */}
+                                     <div className="col-span-1 text-left text-gray-500 text-xs font-bold pl-0.5">
+                                         {index + 1}
+                                     </div>
 
                                     {/* Edit Button */}
                                     <div className="col-span-1 text-center">
@@ -4390,7 +4645,7 @@ const AdminPOSOrders = () => {
                                     </div>
                                                   {/* Name */}
                                      <div className="col-span-2 min-w-0">
-                                         <h4 className="text-sm font-bold text-gray-900 whitespace-normal break-words leading-tight" title={item.productName}>{item.productName}</h4>
+                                         <h4 className="text-xs font-semibold text-gray-900 whitespace-normal break-words leading-tight" title={item.productName}>{formatProductName(item.productName)}</h4>
                                          {(item as any).warrantyType && (item as any).warrantyType !== 'None' && (
                                              <div className="text-[10px] text-[var(--primary-color)] font-bold mt-0.5">
                                                  {(item as any).warrantyType}: {(item as any).warrantyDuration}
@@ -4429,7 +4684,7 @@ const AdminPOSOrders = () => {
                                                onChange={(e) => updateItemDetails(getCartLineId(item), { compareAtPrice: parseFloat(e.target.value) || 0 })}
                                                onWheel={preventNumberScrollChange}
                                                onKeyDown={preventArrowStepChange}
-                                               className="w-full text-center text-sm font-semibold border border-gray-200 focus:border-[var(--primary-color)] bg-white rounded-lg h-8 px-1 outline-none transition-all pos-compact-input"
+                                               className="w-full text-center text-xs font-semibold border border-gray-200 focus:border-[var(--primary-color)] bg-white rounded-lg h-8 px-0.5 outline-none transition-all pos-compact-input"
                                            />
                                       </div>
 
@@ -4475,7 +4730,7 @@ const AdminPOSOrders = () => {
                                      </div>
 
                                     {/* Sub Total */}
-                                    <div className="col-span-1 text-center font-bold text-gray-900 text-sm">
+                                    <div className="col-span-1 text-center font-black text-gray-950 text-base">
                                         ₹{sp * item.qty}
                                     </div>
 
@@ -4504,7 +4759,7 @@ const AdminPOSOrders = () => {
                {/* End Left Main Column */}
 
                    {/* Desktop Sidebar (New Two-Column Layout) */}
-                    <div className="hidden lg:flex w-[320px] bg-gray-50 border-l border-gray-200 flex-col p-2 pt-1 shadow-[inset_4px_0_24px_-12px_rgba(0,0,0,0.1)] z-20 overflow-hidden justify-start">
+                    <div className="hidden lg:flex w-[320px] bg-gray-50 border-l border-gray-200 flex-col p-2 pt-1 shadow-[inset_4px_0_24px_-12px_rgba(0,0,0,0.1)] z-20 overflow-hidden justify-start lg:sticky lg:top-4 lg:h-[90vh]">
                         <div className="flex-1 flex flex-col justify-start min-h-0 pr-0.5 overflow-y-auto">
 
                       {/* --- QUICK ACTIONS --- */}
@@ -4654,7 +4909,7 @@ const AdminPOSOrders = () => {
                                   <button
                                      onClick={handleGenerateBill}
                                      disabled={loading || cart.length === 0}
-                                     className="w-full bg-[#eab308] border border-[#eab308] text-[#0d055a] hover:bg-[#d97706] hover:text-white font-black py-1.5 px-2.5 rounded-md transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed group text-xs h-8.5 uppercase tracking-wider"
+                                     className="w-full bg-[#eab308] border border-[#eab308] text-[#0d055a] hover:bg-[#d97706] hover:text-white font-black py-1.5 px-2.5 rounded-md transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed group text-xs h-8 uppercase tracking-wider"
                                    >
                                     <svg className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                     <span>GENERATE BILL</span>
@@ -4664,7 +4919,7 @@ const AdminPOSOrders = () => {
                                <button
                                   onClick={activeBillId.startsWith('edit_') ? handleUpdateOrder : handleAccessPayment}
                                   disabled={loading || cart.length === 0}
-                                    className="w-full bg-[#0d055a] hover:bg-[#160a82] text-white font-extrabold py-1.5 px-2.5 rounded-md shadow-md transition-all active:scale-95 flex items-center justify-center gap-1 disabled:opacity-70 disabled:cursor-not-allowed text-xs h-8.5 uppercase tracking-wider"
+                                    className="w-full bg-[#0d055a] hover:bg-[#160a82] text-white font-extrabold py-1.5 px-2.5 rounded-md shadow-md transition-all active:scale-95 flex items-center justify-center gap-1 disabled:opacity-70 disabled:cursor-not-allowed text-xs h-8 uppercase tracking-wider"
                                 >
                                   {loading ? (
                                      <>

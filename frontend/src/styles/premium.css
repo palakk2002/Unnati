@@ -299,7 +299,7 @@
 
 /* Sidebar Specific Styles */
 .premium-sidebar {
-  background-color: #223129 !important;
+  background-color: #4b5563 !important;
   color: #FFFFFF !important;
   border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
   width: 280px !important;
@@ -331,7 +331,7 @@
 }
 
 .premium-sidebar .menu-item.active {
-  background-color: #223129 !important;
+  background-color: #4b5563 !important;
   color: #FFFFFF !important;
   border-left: 3px solid #6DBB2D !important;
   border-radius: 0 8px 8px 0 !important;
@@ -429,14 +429,14 @@
 .premium-theme button.bg-\[\#0d055a\],
 .premium-theme div.bg-\[\#0d055a\],
 .premium-theme button[class*="bg-[#0d055a]"] {
-  background-color: #223129 !important;
-  border-color: #223129 !important;
+  background-color: #4b5563 !important;
+  border-color: #4b5563 !important;
 }
 
 .premium-theme button.bg-\[\#0d055a\]:hover,
 .premium-theme button[class*="bg-[#0d055a]"]:hover {
-  background-color: #1a2620 !important;
-  border-color: #1a2620 !important;
+  background-color: #374151 !important;
+  border-color: #374151 !important;
 }
 
 /* Generate Bill Button (has group text-xs) */
@@ -468,7 +468,7 @@
 
 /* Order Type Toggle buttons active state */
 .premium-theme div.bg-gray-200.p-1.rounded-xl.flex.relative.h-7 div.bg-\[\#0d055a\] {
-  background-color: #223129 !important;
+  background-color: #4b5563 !important;
 }
 
 /* Customer Selection focus state */

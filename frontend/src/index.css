@@ -202,15 +202,15 @@ main .mx-auto:not(.max-w-md):not(.max-w-sm):not(.max-w-xs):not(.max-w-2xl):not(.
 
 /* GLOBAL NAVY-BLUE COLOR REPLACEMENTS FOR USER'S SPECIFIC PALETTE */
 [class*="bg-[#0d055a]"] {
-  background-color: #223129 !important;
+  background-color: #4b5563 !important;
 }
 
 [class*="border-[#0d055a]"] {
-  border-color: #223129 !important;
+  border-color: #4b5563 !important;
 }
 
 [class*="text-[#0d055a]"] {
-  color: #223129 !important;
+  color: #4b5563 !important;
 }
 
 /* Complete Transaction Button (Primary Green) */
@@ -229,13 +229,13 @@ button[class*="shadow-[#0d055a]"]:hover {
 button[class*="border-[#0d055a]"][class*="group"] {
   background-color: #F7B733 !important;
   border-color: #F7B733 !important;
-  color: #223129 !important;
+  color: #4b5563 !important;
 }
 
 button[class*="border-[#0d055a]"][class*="group"]:hover {
   background-color: #e5a524 !important;
   border-color: #F7B733 !important;
-  color: #223129 !important;
+  color: #4b5563 !important;
 }
 
 /* RESPONSIVE LOGIN PAGE STYLING */
