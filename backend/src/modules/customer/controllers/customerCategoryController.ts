@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Category from "../../../models/Category";
 import SubCategory from "../../../models/SubCategory";
 import Product from "../../../models/Product";
+import HeaderCategory from "../../../models/HeaderCategory";
 import mongoose from "mongoose";
 import { cache } from "../../../utils/cache";
 import Seller from "../../../models/Seller";
@@ -244,6 +245,46 @@ export const getCategoryById = async (req: Request, res: Response) => {
             });
           }
         }
+      }
+
+      // Check if it is a HeaderCategory slug
+      const headerCategory = await HeaderCategory.findOne({
+        slug: id,
+        status: "Published",
+      }).lean();
+
+      if (headerCategory) {
+        console.log(`[getCategoryById] Item ${id} is a HeaderCategory. Finding its main categories.`);
+        
+        // Find all root categories under this header category
+        const subcategoriesList = await Category.find({
+          headerCategoryId: headerCategory._id,
+          parentId: null,
+          status: "Active"
+        })
+          .select("name image order slug icon")
+          .sort({ order: 1 })
+          .lean();
+
+        const resultData = {
+          category: {
+            _id: headerCategory._id,
+            name: headerCategory.name,
+            slug: headerCategory.slug,
+            image: headerCategory.image,
+            isHeaderCategory: true
+          },
+          subcategories: subcategoriesList,
+          currentSubcategory: null,
+        };
+
+        // Cache the result
+        cache.set(cacheKey, resultData, 10 * 60 * 1000);
+
+        return res.status(200).json({
+          success: true,
+          data: resultData,
+        });
       }
 
       console.log(`[getCategoryById] Category/Subcategory not found: ${id}`);

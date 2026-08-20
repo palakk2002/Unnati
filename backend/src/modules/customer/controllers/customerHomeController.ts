@@ -365,9 +365,18 @@ export const getHomeContent = async (req: Request, res: Response) => {
     );
 
     // 3. Categories for Tiles (Grocery, Snacks, etc)
-    const categories = await Category.find({
-      status: "Active",
-    })
+    const categoryFilterQuery: any = { status: "Active" };
+    if (headerCategorySlug && headerCategorySlug !== "all") {
+      const headerCategory = await HeaderCategory.findOne({
+        slug: headerCategorySlug,
+        status: "Published",
+      }).lean();
+      if (headerCategory) {
+        categoryFilterQuery.headerCategoryId = headerCategory._id;
+      }
+    }
+
+    const categories = await Category.find(categoryFilterQuery)
       .select("name image icon color slug")
       .sort({ order: 1 });
 

@@ -147,7 +147,7 @@ export default function FeaturedCategoriesSection() {
               >
                 {/* Mobile: rounded border square card. Desktop: uses fallback flex card styling */}
                 <div 
-                  className="w-[92px] h-[92px] md:w-full md:h-auto flex items-center justify-center border border-neutral-100 rounded-[24px] bg-white p-1 shadow-sm md:shadow-none md:border-0 md:bg-transparent"
+                  className="w-[92px] h-[92px] md:w-full md:h-[120px] flex items-center justify-center border border-neutral-100 rounded-[24px] bg-white p-1 shadow-sm md:shadow-none md:border-0 md:p-3"
                   style={{
                     backgroundColor: window.innerWidth < 768 ? '#ffffff' : bgColor,
                     borderRadius: window.innerWidth < 768 ? '24px' : '16px'
@@ -156,7 +156,7 @@ export default function FeaturedCategoriesSection() {
                   <img
                     src={category.image}
                     alt={category.name}
-                    className="w-full h-full object-cover rounded-[20px] transition-transform duration-300 hover:scale-110"
+                    className="w-full h-full object-cover rounded-[20px] md:rounded-[14px] transition-transform duration-300 hover:scale-110"
                     loading="lazy"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;

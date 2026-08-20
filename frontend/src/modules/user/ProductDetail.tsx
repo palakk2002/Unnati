@@ -18,9 +18,7 @@ import { getSimilarProducts as getSemanticSimilarProducts } from '../../services
 import WishlistButton from '../../components/WishlistButton';
 import StarRating from "../../components/ui/StarRating";
 import ProductCard from "./components/ProductCard";
-import DealOfTheDay from "./components/banners/DealOfTheDay";
-import FeaturedDeal from "./components/banners/FeaturedDeal";
-import FlashDealSection from "./components/banners/FlashDealSection";
+// Unused banner imports removed
 import { calculateProductPrice, getApplicableUnitPrice } from '../../utils/priceUtils';
 import {
   findCartItemForPrimaryVariant,
@@ -49,10 +47,9 @@ export default function ProductDetail() {
   const { user } = useAuth();
   const { showToast } = useToast();
   const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
-  const [isProductDetailsExpanded, setIsProductDetailsExpanded] =
-    useState(false);
-  const [isHighlightsExpanded, setIsHighlightsExpanded] = useState(false);
-  const [isInfoExpanded, setIsInfoExpanded] = useState(false);
+  const [isDescOpen, setIsDescOpen] = useState(true);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(true);
+  const [isReviewsOpen, setIsReviewsOpen] = useState(true);
 
   const searchSuggestions = ['atta', 'milk', 'dal', 'coke', 'bread', 'eggs', 'rice', 'oil'];
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
@@ -658,11 +655,11 @@ export default function ProductDetail() {
             <div className="flex flex-col md:flex-row-reverse gap-4">
 
               {/* Main Image Container */}
-              <div className="flex-1 aspect-square bg-white border border-neutral-200 rounded-2xl flex items-center justify-center p-6 relative group overflow-hidden shadow-sm">
+              <div className="w-full flex-1 aspect-square bg-white border border-neutral-200 rounded-2xl flex items-center justify-center p-2 md:p-6 relative group overflow-hidden shadow-sm">
 
                 {/* Mobile carousel */}
                 <div
-                  className="w-full h-full flex transition-transform duration-300 ease-out md:hidden"
+                  className="absolute inset-0 flex transition-transform duration-300 ease-out md:hidden overflow-hidden"
                   onTouchStart={onTouchStart}
                   onTouchMove={onTouchMove}
                   onTouchEnd={onTouchEnd}
@@ -672,11 +669,11 @@ export default function ProductDetail() {
                   }}
                 >
                   {allMedia.map((item, index: number) => (
-                    <div key={index} className="w-full h-full flex-shrink-0 flex items-center justify-center" style={{ minWidth: '100%' }}>
+                    <div key={index} className="w-full h-full flex-shrink-0 flex items-center justify-center overflow-hidden" style={{ minWidth: '100%', width: '100%' }}>
                       {item.type === "video" ? (
-                        <video src={item.url} controls className="max-w-full max-h-full object-contain rounded-xl" playsInline />
+                        <video src={item.url} controls className="w-full h-full object-cover" playsInline />
                       ) : item.url ? (
-                        <img src={item.url} alt={`${product.name} - Media ${index + 1}`} className="max-w-full max-h-full object-contain" referrerPolicy="no-referrer" />
+                        <img src={item.url} alt={`${product.name} - Media ${index + 1}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-neutral-400 text-6xl font-bold">
                           {(product.name || "?").charAt(0).toUpperCase()}
@@ -735,7 +732,7 @@ export default function ProductDetail() {
 
               {/* Thumbnail Strip (vertical on desktop, horizontal on mobile) */}
               {allMedia.length > 1 && (
-                <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto scrollbar-hide pb-2 md:pb-0 md:max-h-[500px] w-full md:w-20 flex-shrink-0">
+                <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto scrollbar-hide pb-2 md:pb-0 md:max-h-[500px] w-full md:w-20 flex-shrink-0 justify-center md:justify-start">
                   {allMedia.map((item, index) => (
                     <button
                       key={index}
@@ -846,67 +843,161 @@ export default function ProductDetail() {
               )}
             </div>
 
-            {/* Product description & highlights */}
-            <div className="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm space-y-4">
-              <button
-                onClick={() => setIsProductDetailsExpanded(!isProductDetailsExpanded)}
-                className="w-full flex items-center justify-between font-bold text-neutral-800 text-base md:text-lg"
-              >
-                <span>Product Information</span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={`transition-transform ${isProductDetailsExpanded ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
-              </button>
-
-              {(isProductDetailsExpanded || true) && (
-                <div className="space-y-4 pt-3 border-t border-neutral-100">
-                  {/* Service Guarantees */}
-                  <div className="grid grid-cols-3 gap-2 py-3 text-center bg-neutral-50 rounded-xl">
-                    <div className="flex flex-col items-center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="text-neutral-500 mb-1"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3M20.49 15a9 9 0 0 1-14.85 3" /></svg><span className="text-xs font-bold text-neutral-950">48 Hours</span><span className="text-[10px] font-medium text-neutral-500">Replacement</span></div>
-                    <div className="flex flex-col items-center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="text-neutral-500 mb-1"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM13 8H7M17 12H7" /></svg><span className="text-xs font-bold text-neutral-950">24/7 Support</span><span className="text-[10px] font-medium text-neutral-500">Helpdesk</span></div>
-                    <div className="flex flex-col items-center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" className="text-neutral-500 mb-1"><rect x="1" y="3" width="15" height="13" rx="2" ry="2" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg><span className="text-xs font-bold text-neutral-950">Super Fast</span><span className="text-[10px] font-medium text-neutral-500">Delivery</span></div>
+            {/* Collapsible Accordion Sections */}
+            <div className="space-y-2">
+              {/* Section 1: Product Description */}
+              <div className="bg-white rounded-xl border border-neutral-100 shadow-sm overflow-hidden">
+                <button
+                  onClick={() => setIsDescOpen(!isDescOpen)}
+                  className="w-full flex items-center justify-between py-2 px-3 text-left font-bold text-neutral-800 text-xs md:text-sm tracking-wider"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${isDescOpen ? 'bg-green-50 text-green-600' : 'bg-neutral-50 text-neutral-500'}`}>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <span className="text-[11px] md:text-xs font-bold text-neutral-700 tracking-wider">PRODUCT DESCRIPTION</span>
                   </div>
-
-                  {/* Highlights spec sheet */}
-                  <div className="space-y-3.5 text-sm md:text-base">
-                    {product.description && (
-                      <div>
-                        <span className="font-semibold text-neutral-800 block mb-1">Description:</span>
-                        <p className="text-neutral-600 leading-relaxed">{product.description}</p>
-                      </div>
+                  <svg className={`w-3.5 h-3.5 transition-transform ${isDescOpen ? 'rotate-180 text-green-600' : 'text-neutral-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {isDescOpen && (
+                  <div className="px-3 pb-3 pt-0.5 border-t border-neutral-50">
+                    {product.description ? (
+                      <p className="text-neutral-600 leading-relaxed text-xs whitespace-pre-line">
+                        {product.description}
+                      </p>
+                    ) : (
+                      <p className="text-neutral-600 leading-relaxed text-xs">
+                        This premium quality {product.name || 'product'} is selected carefully to ensure freshness and high nutritional value. Sourced from certified suppliers and packed under strict hygiene conditions, it provides natural taste and essential nutrients for a healthy lifestyle. Store in a cool, dry place to maintain shelf-life.
+                      </p>
                     )}
                     {product.tags && product.tags.length > 0 && (
-                      <div className="flex flex-col sm:flex-row sm:gap-2">
-                        <span className="font-semibold text-neutral-800 w-28 flex-shrink-0">Key Features:</span>
-                        <span className="text-neutral-600 flex-1">{product.tags.join(', ')}</span>
+                      <div className="mt-2.5 flex flex-wrap gap-1">
+                        {product.tags.map((tag: string, index: number) => (
+                          <span key={index} className="bg-neutral-100 text-neutral-800 text-[9px] md:text-[10px] px-2 py-0.5 rounded font-semibold">
+                            {tag}
+                          </span>
+                        ))}
                       </div>
                     )}
-                    <div className="flex flex-col sm:flex-row sm:gap-2">
-                      <span className="font-semibold text-neutral-800 w-28 flex-shrink-0">Return Policy:</span>
-                      <span className="text-neutral-600 flex-1">{product.returnPolicy?.isReturnable ? `Returnable within ${product.returnPolicy.returnPeriodDays} days.` : "Non-returnable"}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Section 2: Product Details */}
+              <div className="bg-white rounded-xl border border-neutral-100 shadow-sm overflow-hidden">
+                <button
+                  onClick={() => setIsDetailsOpen(!isDetailsOpen)}
+                  className="w-full flex items-center justify-between py-2 px-3 text-left font-bold text-neutral-800 text-xs md:text-sm tracking-wider"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${isDetailsOpen ? 'bg-green-50 text-green-600' : 'bg-neutral-50 text-neutral-500'}`}>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                    <span className="text-[11px] md:text-xs font-bold text-neutral-700 tracking-wider">PRODUCT DETAILS</span>
+                  </div>
+                  <svg className={`w-3.5 h-3.5 transition-transform ${isDetailsOpen ? 'rotate-180 text-green-600' : 'text-neutral-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {isDetailsOpen && (
+                  <div className="px-3 pb-3 pt-2 border-t border-neutral-50">
+                    <div className="grid grid-cols-2 gap-2">
+                      {/* Shelf Life */}
+                      <div className="bg-neutral-50 border border-neutral-100 py-1.5 px-2.5 rounded-lg">
+                        <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider mb-0.5">Shelf Life</p>
+                        <p className="text-xs font-bold text-neutral-800">{product.shelfLife || "7 Days"}</p>
+                      </div>
+
+                      {/* Country of Origin */}
+                      <div className="bg-neutral-50 border border-neutral-100 py-1.5 px-2.5 rounded-lg">
+                        <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider mb-0.5">Country of Origin</p>
+                        <p className="text-xs font-bold text-neutral-800">{product.madeIn || "India"}</p>
+                      </div>
+
+                      {/* FSSAI */}
+                      <div className="bg-neutral-50 border border-neutral-100 py-1.5 px-2.5 rounded-lg">
+                        <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider mb-0.5">FSSAI License</p>
+                        <p className="text-xs font-bold text-neutral-800 font-mono">{product.fssaiLicNo || "1001234567890"}</p>
+                      </div>
+
+                      {/* Customer Care / Marketer */}
+                      <div className="bg-neutral-50 border border-neutral-100 py-1.5 px-2.5 rounded-lg">
+                        <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider mb-0.5">Customer Care</p>
+                        <p className="text-xs font-bold text-neutral-800 truncate" title={product.marketer || "care@unnatimegamart.com"}>
+                          {product.marketer || "care@unnatimegamart.com"}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+
+              {/* Section 3: Customer Reviews */}
+              <div className="bg-white rounded-xl border border-neutral-100 shadow-sm overflow-hidden">
+                <button
+                  onClick={() => setIsReviewsOpen(!isReviewsOpen)}
+                  className="w-full flex items-center justify-between py-2 px-3 text-left font-bold text-neutral-800 text-xs md:text-sm tracking-wider"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${isReviewsOpen ? 'bg-green-50 text-green-600' : 'bg-neutral-50 text-neutral-500'}`}>
+                      <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                      </svg>
+                    </div>
+                    <span className="text-[11px] md:text-xs font-bold text-neutral-700 tracking-wider">CUSTOMER REVIEWS {reviews.length > 0 ? `(${reviews.length})` : ''}</span>
+                  </div>
+                  <svg className={`w-3.5 h-3.5 transition-transform ${isReviewsOpen ? 'rotate-180 text-green-600' : 'text-neutral-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {isReviewsOpen && (
+                  <div className="px-3 pb-3 pt-2 border-t border-neutral-50">
+                    {reviews.length > 0 && (
+                      <div className="mb-2">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded font-semibold">
+                          ★ {(() => {
+                            const sum = reviews.reduce((acc, r) => acc + (r.rating || 0), 0);
+                            return (sum / reviews.length).toFixed(1);
+                          })()}
+                        </span>
+                      </div>
+                    )}
+                    {reviews.length > 0 ? (
+                      <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
+                        {reviews.map((review) => (
+                          <div key={review._id} className="border-b border-neutral-50 pb-2 last:border-0">
+                            <div className="flex items-center justify-between mb-0.5 text-xs">
+                              <span className="font-semibold text-neutral-850">{review.customer?.name || "Customer"}</span>
+                              <span className="text-[9px] font-bold text-green-600 bg-green-50 px-1 py-0.2 rounded">★ {review.rating}</span>
+                            </div>
+                            <p className="text-xs text-neutral-600">{review.comment}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-neutral-400 text-center py-2">No reviews yet.</p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Ratings & Reviews */}
+            {/* Service Guarantees */}
             <div className="bg-white rounded-2xl border border-neutral-100 p-5 shadow-sm">
-              <h3 className="text-base md:text-lg font-bold text-neutral-800 mb-3">Ratings & Reviews</h3>
-              {reviews.length > 0 ? (
-                <div className="space-y-3.5 max-h-[250px] overflow-y-auto pr-1">
-                  {reviews.map((review) => (
-                    <div key={review._id} className="border-b border-neutral-50 pb-3 last:border-0">
-                      <div className="flex items-center justify-between mb-1.5 text-sm md:text-base">
-                        <span className="font-semibold text-neutral-850">{review.customer?.name || "Customer"}</span>
-                        <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">★ {review.rating}</span>
-                      </div>
-                      <p className="text-sm text-neutral-600">{review.comment}</p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-neutral-400 text-center py-2">No reviews yet.</p>
-              )}
+              <div className="grid grid-cols-3 gap-2 py-3 text-center bg-neutral-50 rounded-xl">
+                <div className="flex flex-col items-center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="text-neutral-500 mb-1"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3M20.49 15a9 9 0 0 1-14.85 3" /></svg><span className="text-xs font-bold text-neutral-950">48 Hours</span><span className="text-[10px] font-medium text-neutral-500">Replacement</span></div>
+                <div className="flex flex-col items-center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="text-neutral-500 mb-1"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2zM13 8H7M17 12H7" /></svg><span className="text-xs font-bold text-neutral-950">24/7 Support</span><span className="text-[10px] font-medium text-neutral-500">Helpdesk</span></div>
+                <div className="flex flex-col items-center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" className="text-neutral-500 mb-1"><rect x="1" y="3" width="15" height="13" rx="2" ry="2" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg><span className="text-xs font-bold text-neutral-950">Super Fast</span><span className="text-[10px] font-medium text-neutral-500">Delivery</span></div>
+              </div>
             </div>
+
+
 
           </div>
 
@@ -1073,12 +1164,44 @@ export default function ProductDetail() {
         </div>
       )}
 
-      {/* Similar / Deals Section */}
-      <div className="mt-8">
-        <DealOfTheDay />
-        <FeaturedDeal />
-        <FlashDealSection />
-      </div>
+      {/* Recommended Products Section */}
+      {similarProducts && similarProducts.length > 0 && (
+        <div className="mt-12 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl md:text-2xl font-bold text-neutral-900 font-sans tracking-tight">
+              Recommended Products
+            </h2>
+            {hasMoreSimilar && (
+              <button
+                onClick={handleLoadMoreSimilar}
+                disabled={isSimilarLoading}
+                className="text-sm font-bold text-[var(--customer-primary-dark)] hover:text-[var(--customer-primary-darker)] transition-colors disabled:opacity-50 flex items-center gap-1"
+              >
+                {isSimilarLoading ? "Loading..." : (
+                  <>
+                    Show More
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {similarProducts.map((simProduct) => (
+              <ProductCard
+                key={simProduct._id || simProduct.id}
+                product={simProduct}
+                showStockInfo={true}
+                showVegetarianIcon={false}
+                showRating={true}
+                categoryStyle={true}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       </div>
 

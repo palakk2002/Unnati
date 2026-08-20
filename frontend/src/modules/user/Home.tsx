@@ -417,9 +417,24 @@ export default function Home() {
     const loadTabProducts = async () => {
       if (!activeTab || activeTab === "all") {
         setTabProducts([]);
+        // Restore default home content
+        const defaultHome = getCachedHomeContent(undefined, location?.latitude, location?.longitude);
+        if (defaultHome?.data) {
+          setHomeData(defaultHome.data);
+        } else {
+          try {
+            const response = await getHomeContent(undefined, location?.latitude, location?.longitude, true, 5 * 60 * 1000, true);
+            if (response.success && response.data) {
+              setHomeData(response.data);
+            }
+          } catch (e) {
+            console.debug("Failed to load default home content:", e);
+          }
+        }
         return;
       }
       try {
+        // Fetch products
         const res = await getCustomerProducts({
           headerCategorySlug: activeTab,
           page: currentPage,
@@ -435,8 +450,14 @@ export default function Home() {
         } else if (!cachedTabProductsResponse?.data) {
           setTabProducts([]);
         }
+
+        // Fetch home content for tab (categories, shops, sections)
+        const homeRes = await getHomeContent(activeTab, location?.latitude, location?.longitude, true, 5 * 60 * 1000, true);
+        if (homeRes.success && homeRes.data) {
+          setHomeData(homeRes.data);
+        }
       } catch (e) {
-        console.error("Failed to load tab products:", e);
+        console.error("Failed to load tab data:", e);
         if (!cachedTabProductsResponse?.data) {
           setTabProducts([]);
         }
@@ -545,6 +566,25 @@ export default function Home() {
 
         {/* First Order Offer (First-time users) */}
         <FirstOrderOfferBanner />
+        
+        {/* Categories Section for selected Header Category */}
+        {activeTab !== "all" && homeData.categories && homeData.categories.length > 0 && (
+          <div className="mt-4 mb-2">
+            <CategoryTileSection
+              title="Shop by Category"
+              tiles={homeData.categories.map((c: any) => ({
+                id: c._id || c.id,
+                name: c.name,
+                image: c.image,
+                categoryId: c._id || c.id,
+                slug: c.slug,
+                type: "category",
+              }))}
+              columns={4}
+              showProductCount={false}
+            />
+          </div>
+        )}
 
         {/* Filtered Products Section */}
         {activeTab !== "all" && (
@@ -572,70 +612,65 @@ export default function Home() {
           </div>
         )}
 
-        {/* Bestsellers Section - Originally here, now moved up. Only keeping condition wrapper for other sections if needed */}
-        {activeTab === "all" && (
+        {/* Dynamic Home Sections - Render sections created by admin */}
+        {homeData.homeSections && homeData.homeSections.length > 0 && (
           <>
-            {/* Dynamic Home Sections - Render sections created by admin */}
-            {homeData.homeSections && homeData.homeSections.length > 0 && (
-              <>
-                {homeData.homeSections.map((section: any) => {
-                  const columnCount = Number(section.columns) || 4;
+            {homeData.homeSections.map((section: any) => {
+              const columnCount = Number(section.columns) || 4;
 
-                  if (section.displayType === "products" && section.data && section.data.length > 0) {
-                    const gridClass = {
-                      2: "grid-cols-2",
-                      3: "grid-cols-2 md:grid-cols-3",
-                      4: "grid-cols-2 md:grid-cols-4",
-                      6: "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
-                      8: "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
-                    }[columnCount] || "grid-cols-2 md:grid-cols-4";
+              if (section.displayType === "products" && section.data && section.data.length > 0) {
+                const gridClass = {
+                  2: "grid-cols-2",
+                  3: "grid-cols-2 md:grid-cols-3",
+                  4: "grid-cols-2 md:grid-cols-4",
+                  6: "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
+                  8: "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+                }[columnCount] || "grid-cols-2 md:grid-cols-4";
 
-                    const isCompact = columnCount >= 4;
-                    const gapClass = columnCount >= 4 ? "gap-2 md:gap-3" : "gap-3 md:gap-4";
+                const isCompact = columnCount >= 4;
+                const gapClass = columnCount >= 4 ? "gap-2 md:gap-3" : "gap-3 md:gap-4";
 
-                    return (
-                      <div key={section.id} className="mt-6 mb-6 md:mt-8 md:mb-8">
-                        {section.title && (
-                          <h2 className="text-lg md:text-2xl font-semibold text-neutral-900 mb-3 md:mb-6 px-2 md:px-4 lg:px-4 tracking-tight capitalize">
-                            {section.title}
-                          </h2>
-                        )}
-                        <div className="px-2 md:px-4 lg:px-4">
-                          <LazyProductGrid
-                            products={section.data}
-                            gridClassName={`grid ${gridClass} ${gapClass}`}
-                            compact={isCompact}
-                            showStockInfo={false}
-                            batchSize={columnCount >= 6 ? 12 : 8}
-                          />
-                        </div>
-                      </div>
-                    );
-                  }
+                return (
+                  <div key={section.id} className="mt-6 mb-6 md:mt-8 md:mb-8">
+                    {section.title && (
+                      <h2 className="text-lg md:text-2xl font-semibold text-neutral-900 mb-3 md:mb-6 px-2 md:px-4 lg:px-4 tracking-tight capitalize">
+                        {section.title}
+                      </h2>
+                    )}
+                    <div className="px-2 md:px-4 lg:px-4">
+                      <LazyProductGrid
+                        products={section.data}
+                        gridClassName={`grid ${gridClass} ${gapClass}`}
+                        compact={isCompact}
+                        showStockInfo={false}
+                        batchSize={columnCount >= 6 ? 12 : 8}
+                      />
+                    </div>
+                  </div>
+                );
+              }
 
-                  return (
-                    <CategoryTileSection
-                      key={section.id}
-                      title={section.title}
-                      tiles={section.data || []}
-                      columns={columnCount as 2 | 3 | 4 | 6 | 8}
-                      showProductCount={false}
-                    />
-                  );
-                })}
-              </>
-            )}
+              return (
+                <CategoryTileSection
+                  key={section.id}
+                  title={section.title}
+                  tiles={section.data || []}
+                  columns={columnCount as 2 | 3 | 4 | 6 | 8}
+                  showProductCount={false}
+                />
+              );
+            })}
+          </>
+        )}
 
-
-
-            {/* Shop by Store Section */}
-            <div className="mb-6 mt-6 md:mb-8 md:mt-8">
-              <h2 className="text-lg md:text-2xl font-semibold text-neutral-900 mb-3 md:mb-6 px-2 md:px-4 lg:px-4 tracking-tight">
-                Shop by Store
-              </h2>
-              <div className="px-2 md:px-4 lg:px-4">
-                <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-4">
-                  {(homeData.shops || []).map((tile: any) => {
+        {/* Shop by Store Section */}
+        <div className="mb-6 mt-6 md:mb-8 md:mt-8">
+          <h2 className="text-lg md:text-2xl font-semibold text-neutral-900 mb-3 md:mb-6 px-2 md:px-4 lg:px-4 tracking-tight">
+            Shop by Store
+          </h2>
+          <div className="px-2 md:px-4 lg:px-4">
+            <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-4">
+              {(homeData.shops || []).map((tile: any) => {
                     const hasImages =
                       tile.image ||
                       (tile.productImages &&
@@ -681,8 +716,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </>
-        )}
 
       </div>
     </div>

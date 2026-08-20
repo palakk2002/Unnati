@@ -329,14 +329,14 @@ export default function ProductCard({
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.97 }}
       transition={{ duration: 0.2 }}
-      className={`${categoryStyle ? '' : 'bg-white'} rounded-lg shadow-sm overflow-hidden flex flex-col relative border border-neutral-100 hover:shadow-md transition-shadow`}
+      className={`h-full ${categoryStyle ? '' : 'bg-white'} rounded-lg shadow-sm overflow-hidden flex flex-col relative border border-neutral-100 hover:shadow-md transition-shadow`}
       style={{ backgroundColor: '#ffffff' }} // Changed from orange tint to white
     >
       <div
         onClick={handleCardClick}
         className="cursor-pointer flex-1 flex flex-col"
       >
-        <div className={`w-full ${compact ? 'h-48 md:h-56' : categoryStyle ? 'h-56 md:h-64' : 'h-64 md:h-80'} bg-neutral-100 flex items-center justify-center overflow-hidden relative`}>
+        <div className={`w-full ${compact ? 'h-32 md:h-56' : categoryStyle ? 'h-36 md:h-64' : 'h-40 md:h-80'} bg-neutral-100 flex items-center justify-center overflow-hidden relative`}>
           {cardImageUrl ? (
             <img
               ref={imageRef}
@@ -365,10 +365,10 @@ export default function ProductCard({
 
           {categoryStyle && showBadge && discount > 0 && (
             <div
-                className="absolute top-0 left-0 z-10 text-white text-sm font-bold px-4 py-2 rounded-br-xl flex items-center gap-1.5 shadow-sm transition-transform hover:scale-105"
+                className="absolute top-0 left-0 z-10 text-white text-[10px] md:text-sm font-bold px-2 py-0.5 md:px-4 md:py-2 rounded-br-lg md:rounded-br-xl flex items-center gap-1 shadow-sm transition-transform hover:scale-105"
                 style={{ background: 'linear-gradient(135deg, var(--customer-primary) 0%, var(--customer-primary-dark) 100%)' }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
                 <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
                 <line x1="7" y1="7" x2="7.01" y2="7"></line>
               </svg>
@@ -378,10 +378,10 @@ export default function ProductCard({
 
           {!categoryStyle && showBadge && (badgeText || discount > 0) && (
             <div
-              className="absolute top-0 left-0 z-10 text-white text-sm px-4 py-2 font-bold rounded-br-xl shadow-md flex items-center gap-1.5"
+              className="absolute top-0 left-0 z-10 text-white text-[10px] md:text-sm px-2 py-0.5 md:px-4 md:py-2 font-bold rounded-br-lg md:rounded-br-xl shadow-md flex items-center gap-1"
               style={{ background: 'linear-gradient(135deg, var(--customer-primary) 0%, var(--customer-primary-dark) 100%)' }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
                 <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
                 <line x1="7" y1="7" x2="7.01" y2="7"></line>
               </svg>
@@ -436,42 +436,39 @@ export default function ProductCard({
           )}
         </div>
 
-        <div className={`${compact ? 'p-3 md:p-4' : categoryStyle ? 'px-2.5 md:px-3 pt-1.5 md:pt-2 pb-2.5 md:pb-3.5' : 'p-4 md:p-5'} flex-1 flex flex-col`}>
+        <div className={`${compact ? 'p-2 md:p-4' : categoryStyle ? 'px-2 pt-1 pb-2 md:px-3 md:pt-2 md:pb-3.5' : 'p-2 md:p-5'} flex-1 flex flex-col`}>
           {categoryStyle ? (
             // Category Style Layout: Quantity, Name, Time, % offer, Price
             <>
               {/* 1. Quantity */}
               {!showPackBadge && (product.pack || primaryVariantLabel) && (
-                <p className="text-xs text-neutral-500 mb-0.5 leading-tight font-medium">
+                <p className="text-[10px] md:text-xs text-neutral-500 mb-0.5 leading-tight font-medium">
                   {primaryVariantLabel || product.pack}
                 </p>
               )}
 
               {/* 2. Name */}
-              <h3 className="text-sm md:text-base font-bold text-neutral-900 mb-0.5 line-clamp-2 leading-tight overflow-hidden">
+              <h3 className="text-xs md:text-sm font-bold text-neutral-900 mb-0.5 line-clamp-3 leading-tight overflow-hidden h-[42px] md:h-[48px] flex items-center">
                 {product.name || product.productName || ''}
               </h3>
 
-              {/* 2.5. Rating - Only show if rating exists */}
-              {((product.rating || (product as any).rating) || 0) > 0 && (
-                <div className="mb-0">
-                  <StarRating
-                    rating={(product.rating || (product as any).rating) || 0}
-                    reviewCount={(product.reviews || (product as any).reviewsCount) || 0}
-                    size="sm"
-                    showCount={true}
-                  />
-                </div>
-              )}
-
-              {/* 3. Time */}
-               <p className="text-xs text-neutral-500 mb-0.5 flex items-center gap-0.5 leading-tight">
-                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
-                   <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2.5" />
-                   <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-                 </svg>
-                 <span>{deliveryTimeText}</span>
-               </p>
+              {/* 3. Combined Time & Rating row */}
+              <div className="flex items-center justify-between text-[10px] md:text-xs text-neutral-500 mb-1 leading-tight">
+                {/* Delivery Time */}
+                <span className="flex items-center gap-0.5">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 text-neutral-400">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2.5" />
+                    <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                  </svg>
+                  <span>{deliveryTimeText}</span>
+                </span>
+                {/* Rating Badge */}
+                {((product.rating || (product as any).rating) || 0) > 0 && (
+                  <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-green-600 bg-green-50 px-1 py-0.2 rounded">
+                    ★ {Number((product.rating || (product as any).rating) || 0).toFixed(1)}
+                  </span>
+                )}
+              </div>
 
               {/* 4. Tiered Pricing Static Display (Multi-Row) */}
               {product.isEnquiryOnly ? (
@@ -480,7 +477,7 @@ export default function ProductCard({
                 </div>
               ) : (
                 <>
-                  {tieredPrices.length > 0 ? (
+                  {tieredPrices.length > 0 && (
                      <div className="flex flex-col gap-0 mb-1 mt-auto w-full border-t border-gray-100 pt-1">
                         {/* Line 1: Base Price */}
                         <div className="flex justify-between items-center text-[10px] leading-none py-0.5">
@@ -496,29 +493,28 @@ export default function ProductCard({
                                <div className="flex items-center gap-1">
                                  <span className="font-bold text-[var(--customer-primary-dark)]">₹{tier.price}</span>
                                   <span className="text-[var(--customer-primary)] font-bold bg-[var(--customer-primary-alpha-10)] px-1 rounded-sm">
-                                   {Math.round(((mrp - tier.price) / mrp) * 100)}% OFFER
-                                 </span>
+                                    {Math.round(((mrp - tier.price) / mrp) * 100)}% OFFER
+                                  </span>
                                 </div>
                             </div>
                         ))}
                      </div>
-                  ) : (
-                     discount > 0 && (
-                       <p className="text-xs md:text-sm font-bold text-[var(--customer-primary)] mb-0.5 leading-tight">
-                        {discount}% OFFER
-                       </p>
-                     )
                   )}
 
-                  {/* 5. Price with discount */}
+                  {/* 5. Price with discount & Inline Offer */}
                   <div className="mt-auto pt-0.5">
-                    <div className="flex items-baseline gap-1 flex-wrap">
-                      <span className="text-base md:text-lg font-bold text-[var(--customer-primary)] leading-tight">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-sm md:text-base font-bold text-[var(--customer-primary)] leading-tight">
                         ₹{currentUnitPrice.toLocaleString('en-IN')}
                       </span>
                       {mrp && mrp > displayPrice && (
-                        <span className="text-xs text-neutral-500 line-through leading-tight">
+                        <span className="text-[10px] text-neutral-400 line-through leading-tight">
                           ₹{mrp.toLocaleString('en-IN')}
+                        </span>
+                      )}
+                      {discount > 0 && tieredPrices.length === 0 && (
+                        <span className="text-[9px] font-black text-red-700 bg-red-50 border border-red-100 px-1 rounded-sm">
+                          {discount}% OFF
                         </span>
                       )}
                     </div>
@@ -551,7 +547,7 @@ export default function ProductCard({
                               handleAdd(e);
                             }}
                             className={`w-full rounded-lg font-black ${
-                              compact ? 'text-xs h-9 px-2 gap-1.5' : 'text-base h-11 px-4 gap-2.5'
+                              compact ? 'text-[11px] h-8 md:text-xs md:h-9 px-2 gap-1' : 'text-xs h-8 md:text-base md:h-11 px-2 md:px-4 gap-1 md:gap-2.5'
                             } flex items-center justify-center uppercase tracking-wider transition-all duration-300 border shadow-sm ${
                               product.isAvailable === false
                               ? 'bg-neutral-100 text-neutral-400 border-neutral-200 cursor-not-allowed'
@@ -567,7 +563,7 @@ export default function ProductCard({
                                'Out of Stock'
                             ) : (
                               <>
-                                <svg width={compact ? "12" : "16"} height={compact ? "12" : "16"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
+                                <svg width={compact ? "11" : "13"} height={compact ? "11" : "13"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
                                   <line x1="12" y1="5" x2="12" y2="19"></line>
                                   <line x1="5" y1="12" x2="19" y2="12"></line>
                                 </svg>
@@ -580,7 +576,7 @@ export default function ProductCard({
                     ) : (
                       <div
                         className={`flex items-center justify-between bg-white rounded-lg ${
-                          compact ? 'h-9' : 'h-11'
+                          compact ? 'h-8 md:h-9' : 'h-8 md:h-11'
                         } w-full border border-[var(--customer-primary)] overflow-hidden shadow-sm`}
                       >
                         <button
@@ -644,7 +640,7 @@ export default function ProductCard({
                 </p>
               )}
 
-              <h3 className={`${compact ? 'text-xs md:text-sm' : 'text-sm md:text-base'} font-semibold text-neutral-900 ${compact ? 'mb-1' : 'mb-2'} line-clamp-2 ${compact ? 'min-h-[2rem]' : 'min-h-[2.5rem]'}`}>
+              <h3 className={`${compact ? 'text-[11px] md:text-xs' : 'text-xs md:text-sm'} font-semibold text-neutral-900 ${compact ? 'mb-1' : 'mb-2'} line-clamp-3 leading-tight overflow-hidden ${compact ? 'h-[36px] md:h-[42px]' : 'h-[42px] md:h-[48px]'} flex items-center`}>
                 {product.name || product.productName || ''}
               </h3>
 
@@ -750,7 +746,7 @@ export default function ProductCard({
                   disabled={product.isAvailable === false}
                   onClick={handleAdd}
                   className={`w-full border ${
-                    compact ? 'text-xs h-9' : 'text-base h-11'
+                    compact ? 'text-[11px] h-8 md:text-xs md:h-9' : 'text-xs h-8 md:text-base md:h-11'
                   } font-black uppercase tracking-wider transition-all duration-300 shadow-sm ${
                     product.isAvailable === false
                     ? 'border-neutral-200 text-neutral-400 bg-neutral-50 cursor-not-allowed'
@@ -765,8 +761,8 @@ export default function ProductCard({
                   {product.isAvailable === false ? (
                     'Out of Range'
                   ) : (
-                    <div className={`flex items-center justify-center ${compact ? 'gap-1.5' : 'gap-2.5'}`}>
-                       <svg width={compact ? "12" : "16"} height={compact ? "12" : "16"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
+                    <div className={`flex items-center justify-center ${compact ? 'gap-1' : 'gap-1.5 md:gap-2.5'}`}>
+                       <svg width={compact ? "11" : "13"} height={compact ? "11" : "13"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                       </svg>
@@ -780,18 +776,18 @@ export default function ProductCard({
             ) : (
               <div
                 className={`flex items-center justify-between bg-white rounded-lg ${
-                  compact ? 'h-9' : 'h-11'
+                  compact ? 'h-8 md:h-9' : 'h-8 md:h-11'
                 } w-full border border-[var(--customer-primary)] overflow-hidden shadow-sm`}
               >
                 <button
                   type="button"
                   onClick={handleDecrease}
                   className={`${
-                    compact ? 'w-8' : 'w-11'
+                    compact ? 'w-7 md:w-8' : 'w-8 md:w-11'
                   } h-full flex items-center justify-center bg-[var(--customer-primary-alpha-10)] text-[var(--customer-primary-dark)] hover:bg-[var(--customer-primary-alpha-20)] transition-colors active:scale-95 flex-shrink-0`}
                   aria-label="Decrease quantity"
                 >
-                  <span className={`${compact ? 'text-sm' : 'text-lg'} font-black select-none`}>−</span>
+                  <span className={`${compact ? 'text-xs md:text-sm' : 'text-xs md:text-lg'} font-black select-none`}>−</span>
                 </button>
                 <input
                   type="number"
@@ -808,7 +804,7 @@ export default function ProductCard({
                   onClick={(e) => e.stopPropagation()}
                   title="Click to type quantity manually (e.g. 50)"
                   className={`${
-                    compact ? 'w-9 text-xs py-0.5' : 'w-12 text-sm py-1'
+                    compact ? 'w-8 text-[11px] md:w-9 md:text-xs py-0.5' : 'w-9 text-xs md:w-12 md:text-sm py-1'
                   } text-center font-black bg-transparent border-0 focus:bg-transparent focus:ring-0 focus:outline-none text-neutral-900 outline-none transition-all cursor-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
                 />
 
@@ -817,11 +813,11 @@ export default function ProductCard({
                   disabled={product.isAvailable === false}
                   onClick={handleIncrease}
                   className={`${
-                    compact ? 'w-8' : 'w-11'
+                    compact ? 'w-7 md:w-8' : 'w-8 md:w-11'
                   } h-full flex items-center justify-center bg-[var(--customer-primary-alpha-10)] text-[var(--customer-primary-dark)] hover:bg-[var(--customer-primary-alpha-20)] transition-colors active:scale-95 flex-shrink-0`}
                   aria-label="Increase quantity"
                 >
-                  <span className={`${compact ? 'text-sm' : 'text-lg'} font-black select-none`}>+</span>
+                  <span className={`${compact ? 'text-xs md:text-sm' : 'text-xs md:text-lg'} font-black select-none`}>+</span>
                 </button>
               </div>
             )}

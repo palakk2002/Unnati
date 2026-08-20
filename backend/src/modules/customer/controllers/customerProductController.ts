@@ -185,8 +185,25 @@ export const getProducts = async (req: Request, res: Response) => {
     };
 
     if (category) {
-      const categoryId = await resolveId(Category, category as string, "Category");
-      if (categoryId) {
+      let categoryId = await resolveId(Category, category as string, "Category");
+      let isHeaderCategory = false;
+      if (!categoryId) {
+        // Fallback: check if category parameter is actually a HeaderCategory slug
+        const header = await findHeaderCategoryBySlug(category as string);
+        if (header?._id) {
+          const categoryIds = await getHeaderCategoryTreeIds(header._id);
+          andConditions.push({
+            $or: [
+              { headerCategoryId: header._id },
+              { category: { $in: categoryIds } },
+              { subcategory: { $in: categoryIds } },
+            ],
+          });
+          isHeaderCategory = true;
+          categoryId = header._id;
+        }
+      }
+      if (categoryId && !isHeaderCategory) {
         // Include products from all sub-categories (descendants)
         const catDoc = await Category.findById(categoryId);
         if (catDoc) {

@@ -39,7 +39,7 @@ export default function Footer() {
         </svg>
       </div>
 
-      <div className="footer-content-container">
+      <div className="footer-content-container relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 pb-10 border-b border-neutral-800">
           
           {/* Column 1: Logo & Desc */}
@@ -139,19 +139,19 @@ export default function Footer() {
             </div>
             <ul className="flex flex-col gap-2.5 text-sm font-medium">
               <li>
-                <Link to="/search?q=Fruits" className="hover:text-white transition-colors duration-200">Fruits & Vegetables</Link>
+                <Link to="/category/home-decoration" className="hover:text-white transition-colors duration-200">Home Decoration</Link>
               </li>
               <li>
-                <Link to="/search?q=Dairy" className="hover:text-white transition-colors duration-200">Dairy Products</Link>
+                <Link to="/category/mosquito-net-machhar-dani" className="hover:text-white transition-colors duration-200">Mosquito Net & Machhar Dani</Link>
               </li>
               <li>
-                <Link to="/search?q=Meat" className="hover:text-white transition-colors duration-200">Meat & Fish</Link>
+                <Link to="/category/water-can-or-water-bottel" className="hover:text-white transition-colors duration-200">Water Can Or Water Bottel</Link>
               </li>
               <li>
-                <Link to="/search?q=Bakery" className="hover:text-white transition-colors duration-200">Bakery & Snacks</Link>
+                <Link to="/category/towels" className="hover:text-white transition-colors duration-200">Towels</Link>
               </li>
               <li>
-                <Link to="/search?q=Beverages" className="hover:text-white transition-colors duration-200">Beverages</Link>
+                <Link to="/category/jhande" className="hover:text-white transition-colors duration-200">Jhande</Link>
               </li>
             </ul>
           </div>

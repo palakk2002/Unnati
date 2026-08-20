@@ -885,13 +885,13 @@ export default function Checkout() {
       </div>
 
       <div className="flex-1 max-w-6xl mx-auto px-4 md:px-6 lg:px-8 pt-1 pb-6 w-full pb-28 lg:pb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">
           
           {/* LEFT COLUMN: Address, Cart Items, Tips, GSTIN, Packaging */}
-          <div className="lg:col-span-7 space-y-4">
+          <div className="lg:col-span-7 space-y-3 lg:space-y-4">
             
             {/* Ordering for someone else */}
-            <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-3 flex items-center justify-between shadow-sm">
+            <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-2.5 md:p-3 flex items-center justify-between shadow-sm">
               <span className="text-sm text-neutral-700">Ordering for someone else?</span>
               <button
                 onClick={() => navigate('/checkout/address', {
@@ -907,20 +907,20 @@ export default function Checkout() {
 
             {/* Saved Address Section */}
             {savedAddress && (
-              <div className="bg-white rounded-xl border border-neutral-200 p-4 shadow-sm">
-                <div className="mb-3">
+              <div className="bg-white rounded-xl border border-neutral-200 p-3 md:p-4 shadow-sm">
+                <div className="mb-2 md:mb-3">
                   <h3 className="text-base font-semibold text-neutral-900 mb-0.5">Delivery Address</h3>
-                  <p className="text-sm text-neutral-600">Select or edit your saved address</p>
+                  <p className="text-xs md:text-sm text-neutral-600">Select or edit your saved address</p>
                 </div>
 
                 <div
-                  className={`border rounded-xl p-3.5 cursor-pointer transition-all ${selectedAddress ? 'border-[var(--customer-primary-dark)] bg-[var(--customer-primary-alpha-10)]' : 'border-neutral-300 bg-white'
+                  className={`border rounded-xl p-3 cursor-pointer transition-all ${selectedAddress ? 'border-[var(--customer-primary-dark)] bg-[var(--customer-primary-alpha-10)]' : 'border-neutral-300 bg-white'
                     }`}
                   onClick={() => setSelectedAddress(savedAddress)}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-1.5 mb-1.5">
+                      <div className="flex items-center gap-1.5 mb-1 md:mb-1.5">
                         <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${selectedAddress ? 'border-[var(--customer-primary-dark)] bg-[var(--customer-primary-dark)]' : 'border-neutral-400'
                           }`}>
                           {selectedAddress && (
@@ -931,8 +931,8 @@ export default function Checkout() {
                         </div>
                         <span className="text-sm font-semibold text-neutral-900">{savedAddress.name}</span>
                       </div>
-                      <p className="text-sm text-neutral-600 mb-0.5">{savedAddress.phone}</p>
-                      <p className="text-sm text-neutral-600">
+                      <p className="text-xs md:text-sm text-neutral-600 mb-0.5">{savedAddress.phone}</p>
+                      <p className="text-xs md:text-sm text-neutral-600">
                         {savedAddress.flat}, {savedAddress.street}, {savedAddress.city} - {savedAddress.pincode}
                       </p>
                     </div>
@@ -945,7 +945,7 @@ export default function Checkout() {
                           }
                         });
                       }}
-                      className="text-sm text-[var(--customer-primary-dark)] font-medium ml-2 hover:underline"
+                      className="text-xs md:text-sm text-[var(--customer-primary-dark)] font-medium ml-2 hover:underline"
                     >
                       Edit
                     </button>
@@ -955,9 +955,9 @@ export default function Checkout() {
             )}
 
             {/* Main Product Card */}
-            <div className="bg-white rounded-xl border border-neutral-200 p-4 shadow-sm">
+            <div className="bg-white rounded-xl border border-neutral-200 p-3 md:p-4 shadow-sm">
               {/* Delivery info */}
-              <div className="flex items-center gap-1.5 mb-3 pb-3 border-b border-neutral-100">
+              <div className="flex items-center gap-1.5 mb-2 pb-2 md:mb-3 md:pb-3 border-b border-neutral-100">
                 <div className="w-5 h-5 rounded-full bg-[var(--customer-primary-dark)] flex items-center justify-center flex-shrink-0">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="2" />
@@ -1274,11 +1274,11 @@ export default function Checkout() {
             )}
 
             {/* Tip your delivery partner */}
-            <div className="bg-white rounded-xl border border-neutral-200 p-4 shadow-sm">
-              <h3 className="text-base font-bold text-neutral-900 mb-0.5">Tip your delivery partner</h3>
-              <p className="text-sm text-neutral-600 mb-3">Your kindness means a lot! 100% of your tip goes to your delivery partner.</p>
+            <div className="bg-white rounded-xl border border-neutral-200 p-3 md:p-4 shadow-sm">
+              <h3 className="text-sm md:text-base font-bold text-neutral-900 mb-0.5">Tip your delivery partner</h3>
+              <p className="text-xs md:text-sm text-neutral-600 mb-2 md:mb-3">Your kindness means a lot! 100% of your tip goes to your delivery partner.</p>
 
-              <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
+              <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1">
                 {[20, 30, 50].map((amt, idx) => {
                   const emoji = idx === 0 ? '😊' : idx === 1 ? '🤩' : '😍';
                   return (
@@ -1340,58 +1340,58 @@ export default function Checkout() {
             </div>
 
             {/* Add GSTIN */}
-            <div className="bg-white rounded-xl border border-neutral-200 p-3 shadow-sm">
+            <div className="bg-white rounded-xl border border-neutral-200 p-2.5 md:p-3 shadow-sm">
               <button
                 onClick={() => setShowGstinSheet(true)}
-                className="w-full flex items-center justify-between hover:bg-neutral-50 p-1.5 rounded-lg transition-colors"
+                className="w-full flex items-center justify-between hover:bg-neutral-50 p-1 rounded-lg transition-colors"
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-[var(--customer-primary-alpha-20)] flex items-center justify-center">
-                    <span className="text-[var(--customer-primary-dark)] font-bold text-base">%</span>
+                  <div className="w-7 h-7 rounded-lg bg-[var(--customer-primary-alpha-20)] flex items-center justify-center flex-shrink-0">
+                    <span className="text-[var(--customer-primary-dark)] font-bold text-sm">%</span>
                   </div>
                   <div className="text-left">
-                    <p className="text-sm font-bold text-neutral-900">Add GSTIN</p>
-                    <p className="text-xs text-neutral-600">
+                    <p className="text-xs md:text-sm font-bold text-neutral-900">Add GSTIN</p>
+                    <p className="text-[10px] md:text-xs text-neutral-600">
                       {gstin ? `GSTIN: ${gstin}` : 'Claim GST input credit up to 18% on your order'}
                     </p>
                   </div>
                 </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-neutral-400">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-neutral-400">
                   <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
             </div>
 
             {/* Gift Packaging */}
-            <div className="bg-white rounded-xl border border-neutral-200 p-3 shadow-sm">
+            <div className="bg-white rounded-xl border border-neutral-200 p-2.5 md:p-3 shadow-sm">
               <button
                 onClick={() => setGiftPackaging(!giftPackaging)}
-                className={`w-full flex items-center justify-between rounded-lg p-2 transition-colors ${
+                className={`w-full flex items-center justify-between rounded-lg p-1.5 transition-colors ${
                   giftPackaging
                     ? 'bg-[var(--customer-primary-alpha-10)] border border-[var(--customer-primary-dark)]'
                     : 'bg-neutral-50 border border-transparent hover:bg-neutral-100'
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                  <div className={`w-4.5 h-4.5 rounded border flex items-center justify-center flex-shrink-0 ${
                     giftPackaging
                       ? 'border-[var(--customer-primary-dark)] bg-[var(--customer-primary-dark)]'
                       : 'border-neutral-400 bg-white'
                   }`}>
                     {giftPackaging && (
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     )}
                   </div>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-neutral-700">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-neutral-700 flex-shrink-0">
                     <path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z" stroke="currentColor" strokeWidth="2" fill="none" />
                   </svg>
                   <div className="text-left">
-                    <p className={`text-sm font-semibold ${giftPackaging ? 'text-[var(--customer-primary-dark)]' : 'text-neutral-900'}`}>
+                    <p className={`text-xs md:text-sm font-semibold ${giftPackaging ? 'text-[var(--customer-primary-dark)]' : 'text-neutral-900'}`}>
                       Gift Packaging
                     </p>
-                    <p className="text-xs text-neutral-600">
+                    <p className="text-[10px] md:text-xs text-neutral-600">
                       {giftPackaging ? 'Add ₹30 for gift packaging' : 'Add ₹30 for elegant gift packaging'}
                     </p>
                   </div>
@@ -1432,8 +1432,8 @@ export default function Checkout() {
             )}
 
             {/* Coupon Section */}
-            <div className="bg-white rounded-xl border border-neutral-200 p-4 shadow-sm">
-              <h3 className="text-base font-bold text-neutral-900 mb-3">Coupons & Offers</h3>
+            <div className="bg-white rounded-xl border border-neutral-200 p-3 md:p-4 shadow-sm">
+              <h3 className="text-sm md:text-base font-bold text-neutral-900 mb-2 md:mb-3">Coupons & Offers</h3>
               {selectedCoupon ? (
                 <div className="flex items-center justify-between bg-[var(--customer-primary-alpha-10)] rounded-lg p-2.5 border border-green-200">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -1629,8 +1629,8 @@ export default function Checkout() {
             </div>
 
             {/* Payment Method */}
-            <div className="bg-white rounded-xl border border-neutral-200 p-3.5 shadow-sm">
-              <h3 className="text-sm font-bold text-neutral-900 mb-2.5">Payment Method</h3>
+            <div className="bg-white rounded-xl border border-neutral-200 p-3 md:p-3.5 shadow-sm">
+              <h3 className="text-xs md:text-sm font-bold text-neutral-900 mb-2">Payment Method</h3>
               <div className="flex flex-col gap-2">
                 {[
                   { id: 'Cash', label: 'Cash on Delivery' },

@@ -119,8 +119,7 @@ export default function OrderAgain() {
 
   return (
     <div className="pb-12 bg-neutral-50/50 min-h-screen">
-      {/* Header - Same as Home page */}
-      <HomeHero />
+      {/* Header - Hidden */}
 
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 lg:px-8 py-6">
         {/* Page Title for Desktop */}

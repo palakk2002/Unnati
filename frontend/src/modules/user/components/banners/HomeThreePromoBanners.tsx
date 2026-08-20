@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const BANNERS_DATA = [
@@ -35,6 +35,8 @@ const BANNERS_DATA = [
 ];
 
 export default function HomeThreePromoBanners() {
+  const navigate = useNavigate();
+
   return (
     <div className="px-2 md:px-4 lg:px-4 py-2 mt-2 mb-4">
       {/* Grid wrapper for three columns */}
@@ -43,7 +45,8 @@ export default function HomeThreePromoBanners() {
           <motion.div
             key={banner.id}
             whileHover={{ y: -4, scale: 1.01 }}
-            className="rounded-[20px] p-6 relative overflow-hidden flex justify-between items-center shadow-sm hover:shadow-md transition-all duration-300 min-h-[145px]"
+            onClick={() => navigate(banner.link)}
+            className="rounded-[20px] p-6 relative overflow-hidden flex justify-between items-center shadow-sm hover:shadow-md transition-all duration-300 min-h-[145px] cursor-pointer"
             style={{ backgroundColor: banner.bgColor }}
           >
             {/* Left Column Information */}
@@ -68,12 +71,11 @@ export default function HomeThreePromoBanners() {
               </div>
 
               {/* Shop Now Action Button */}
-              <Link
-                to={banner.link}
+              <span
                 className="bg-white hover:bg-[var(--customer-primary)] hover:text-white text-[#253D4E] font-black text-[9px] md:text-xs px-4 md:px-5 py-1.5 md:py-2 rounded-full transition-all shadow-sm active:scale-95"
               >
                 Shop Now
-              </Link>
+              </span>
             </div>
 
             {/* Right Column Product Graphic */}
